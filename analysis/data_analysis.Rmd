@@ -1,0 +1,90 @@
+---
+title: "Lineage Metrics Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load libraries
+library(ggplot2)
+library(readr)
+library(reshape2)
+library(dplyr)
+library(scales)
+```
+
+
+This document contains all of the R code used to analyze data for this paper. The input csv files were generated from the raw data via Python scripts that are also included in this directory.
+
+First let's read in the data:
+
+```{r, message=FALSE}
+
+# Pull in two original data files and merge them tog
+alex_real_value_data <- read_csv("alex_real_value_data.csv")
+emily_real_value_data <- read_csv("real_value_data.csv")
+real_value_data <- merge(alex_real_value_data, emily_real_value_data, all = TRUE)
+
+# Convert problem and selection type codes to informative names. Convert things that should be factors to factors
+real_value_data$problem <- sapply(as.character(real_value_data$p),switch,"0"="Himmelblau","1"="Six-hump camel back","2"="Shubert", "6"="Composition function 2")
+real_value_data$problem <- as.factor(real_value_data$problem)
+real_value_data$selection <- sapply(as.character(real_value_data$selection),switch,"0"="Tournament","1"="Lexicase","2"="Eco-EA", "3"="MAP-Elites", "4"="Roulette", "5"="Drift")
+real_value_data$ts <- with(real_value_data, ifelse(selection=="Drift", 1, ts))
+real_value_data$selection <- as.factor(real_value_data$selection)
+real_value_data$seed <- as.factor(real_value_data$seed)
+real_value_data$elite <- as.factor(real_value_data$elite)
+
+# Grab the portion of data we're working with
+tournament_data <- subset(real_value_data, (real_value_data$selection == "Tournament" | real_value_data$selection=="Drift") & real_value_data$elite == 0)
+tournament_endpoints <- filter(tournament_data, update==5000)
+tournament_endpoints$disp_pairwise_distance <- tournament_endpoints$variance_pairwise_distance/tournament_endpoints$mean_pairwise_distance
+tournament_endpoints$disp_evo_distinct <- tournament_endpoints$variance_evolutionary_distinctiveness/tournament_endpoints$mean_evolutionary_distinctiveness
+
+all_dom_data <- read_csv("~/repos/ALife2018-Lineage/analysis/cec_python_library/all_dom_data.csv")
+all_dom_data$update <- 5000
+all_dom_data$seed <- all_dom_data$RANDOM_SEED
+all_dom_data$RANDOM_SEED <- NULL
+all_dom_data$PROBLEM <- NULL
+all_dom_data$DATA_DIRECTORY <- NULL
+all_dom_data$RUN_MODE <- NULL
+all_dom_data$path <- NULL
+
+tournament_endpoints <- merge(tournament_endpoints, all_dom_data)
+melted_tournament_data <- melt(tournament_endpoints, id.vars = c("update", "selection", "seed", "elite", "mutation_rate", "le", "p", "problem", "g", "ts", "TOURNAMENT_SIZE", "FITNESS_INTERVAL", "RESOURCE_SELECT__OUTFLOW", "MUTATION_STD", "SELECTION_METHOD", "RESOURCE_SELECT__RES_AMOUNT", "HINT_GRID_RES", "RESOURCE_SELECT__RES_INFLOW", "LEXICASE_EPSILON", "SYSTEMATICS_INTERVAL", "RESOURCE_SELECT__FRAC", "RESOURCE_SELECT__COST", "RESOURCE_SELECT__MAX_BONUS", "POP_SNAPSHOT_INTERVAL", "POP_SIZE", "ELITE_SELECT__ELITE_CNT", "GENERATIONS"))
+end_points_vars_of_interest <- melted_tournament_data %>%  filter(variable %in% c("mrca_depth", "dominant_deleterious_steps", "current_phylogenetic_diversity", "mean_pairwise_distance", "phenotypic_volatility", "total_magnitude"))
+
+labels <- c(current_phylogenetic_diversity = "Phylogenetic diversity", dominant_deleterious_steps = "Deleterious steps", mean_evolutionary_distinctiveness="Mean evo. distinctiveness", mean_pairwise_distance="Mean pairwise distance", mrca_depth="MRCA depth", variance_evolutionary_distinctiveness="Variance evo. distinctiveness", variance_pairwise_distance = "Variance pairwise distance", phenotypic_volatility="Phenotypic volatility", total_magnitude="Mutation accumulation")
+
+
+```
+
+```{r}
+ggplot(subset(end_points_vars_of_interest, end_points_vars_of_interest$mutation_rate==.001), aes(x=ts, y=value, fill=problem, color=problem, group=problem)) + stat_summary(fun.y = median, fun.ymin = function(x){quantile(x)[2]}, fun.ymax=function(x){quantile(x)[4]}) +stat_summary(geom="smooth", fun.data="mean_cl_boot")+ theme_classic() + scale_x_log10("Tournament size", breaks=c(1,2,4,8,16)) + scale_y_log10("", labels=scientific, breaks = scales::trans_breaks("log10", function(x) 10^x)) + facet_wrap(~variable, scales="free_y", labeller = labeller(variable=labels),ncol=2) + scale_color_discrete("Problem") + theme(legend.position = "bottom", legend.title = element_text(size=10), legend.text = element_text(size=6), strip.text = element_text(size=6), axis.text = element_text(size=6)) + guides(color=guide_legend(ncol=2), fill="none")
+ggsave("../figs/all_ts.png", width=3.5, height=4.5) 
+```
+
+
+```{r}
+ggplot(subset(end_points_vars_of_interest, end_points_vars_of_interest$ts==4), aes(x=mutation_rate, y=value, fill=problem, color=problem)) + stat_summary(fun.y = median, fun.ymin = function(x){quantile(x)[2]}, fun.ymax=function(x){quantile(x)[4]}) +stat_summary(geom="smooth", fun.data="mean_cl_boot")+ theme_classic() + scale_x_log10("Mutation rate", labels=scientific) + scale_y_log10("", breaks = scales::trans_breaks("log10", function(x) 10^x), labels=scientific) + facet_wrap(~variable, scales="free_y", labeller = labeller(variable=labels), ncol=2) +scale_color_discrete("Problem") + theme(legend.position = "bottom", legend.title = element_text(size=10), legend.text = element_text(size=6), strip.text = element_text(size=6), axis.text = element_text(size=6)) + guides(color=guide_legend(ncol=2), fill="none")
+ggsave("../figs/all_mutation_rate.png", width=3.5, height=4.5)
+
+```
+
+```{r}
+#Coexistence figure
+
+# Grab the portion of data we're working with
+eco_ea_data <- subset(real_value_data, real_value_data$selection == "Eco-EA" & real_value_data$elite == 1)
+eco_ea_endpoints <- filter(eco_ea_data, update==5000)
+eco_ea_endpoints$disp_pairwise_distance <- eco_ea_endpoints$variance_pairwise_distance/eco_ea_endpoints$mean_pairwise_distance
+eco_ea_endpoints$disp_evo_distinct <- eco_ea_endpoints$variance_evolutionary_distinctiveness/eco_ea_endpoints$mean_evolutionary_distinctiveness
+
+eco_ea_endpoints <- merge(eco_ea_endpoints, all_dom_data)
+melted_eco_ea_data <- melt(eco_ea_endpoints, id.vars = c("update", "selection", "seed", "elite", "mutation_rate", "le", "p", "problem", "g", "ts", "TOURNAMENT_SIZE", "FITNESS_INTERVAL", "RESOURCE_SELECT__OUTFLOW", "MUTATION_STD", "SELECTION_METHOD", "RESOURCE_SELECT__RES_AMOUNT", "HINT_GRID_RES", "RESOURCE_SELECT__RES_INFLOW", "LEXICASE_EPSILON", "SYSTEMATICS_INTERVAL", "RESOURCE_SELECT__FRAC", "RESOURCE_SELECT__COST", "RESOURCE_SELECT__MAX_BONUS", "POP_SNAPSHOT_INTERVAL", "POP_SIZE", "ELITE_SELECT__ELITE_CNT", "GENERATIONS"))
+eco_ea_vars_of_interest <- melted_eco_ea_data %>%  filter(variable %in% c("mrca_depth", "dominant_deleterious_steps", "current_phylogenetic_diversity", "mean_pairwise_distance", "phenotypic_volatility", "total_magnitude"))
+
+ggplot(eco_ea_vars_of_interest, aes(x=mutation_rate, y=value, fill=problem, color=problem, group=problem)) + stat_summary(fun.y = median, fun.ymin = function(x){quantile(x)[2]}, fun.ymax=function(x){quantile(x)[4]}) +stat_summary(geom="smooth", fun.data="mean_cl_boot")+ theme_classic() + scale_x_log10("Mutation rate") + scale_y_log10("", labels=scientific, breaks = scales::trans_breaks("log10", function(x) 10^x)) + facet_wrap(~variable, scales="free_y", labeller = labeller(variable=labels),ncol=2) + scale_color_discrete("Problem") + theme(legend.position = "bottom", legend.title = element_text(size=10), legend.text = element_text(size=6), strip.text = element_text(size=6), axis.text = element_text(size=6)) + guides(color=guide_legend(ncol=2), fill="none")
+ggsave("../figs/eco_mutation_rate.png", width=3.5, height=4.5)
+
+```
