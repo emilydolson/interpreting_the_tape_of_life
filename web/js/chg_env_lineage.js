@@ -1,11 +1,12 @@
 
 var vis_configs = {
-  data_file_path: "data/chg_env_test.csv",
+  data_file_path: "data/lineage_sequences.csv",
 
+  focal_treatment: "change",
   div_id: "chg_env_lineage_vis",
 
   margin: {top: 20, right: 40, bottom: 20, left: 100},
-  tick_height: 0.5,
+  tick_height: 0.1,
   max_seq_width: 20,
   max_seq_hspacer: 3,
   slice_vspacer: 50,
@@ -14,15 +15,30 @@ var vis_configs = {
   env_seq_hspacer: 5,
   
   full_range: {min: null, max: null},
-  slice_ranges: [{min: 0, max: 500}, {min: 190000, max: 200000}],
+  slice_ranges: [{min: 0, max: 500}, {min: 50000, max: 55000}, {min: 95000, max: 100000}],
   
   time_tick_interval: 500,
 
   env_seq: {
     states: ["ENV-NAND", "ENV-NOT"],
     interval: 200
-  }
+  },
+
+  legend_cwidth: 20,
+  legend_cheight: 20,
+  legend_vspacer: 10,
+
 };
+
+
+var TextSize = function(text) {
+  if (!d3) return;
+  var container = d3.select('body').append('svg');
+  container.append('text').attr( "x", -99999).attr("y", -99999).text(text);
+  var size = container.node().getBBox();
+  container.remove();
+  return { width: size.width, height: size.height };
+}
 
 var GenEnvSequence = function(env_states, interval, end) {
   seq = [];
@@ -40,28 +56,42 @@ var GenEnvSequence = function(env_states, interval, end) {
 }
 
 var LineageStateSeqDataAccessor = function(row) {
-  // Header info: run_id,indiv_seq_states,indiv_seq_starts,indiv_seq_durations,phen_seq_states,phen_seq_starts,phen_seq_durations
+  // Header info: phen_seq_by_geno_state, phen_seq_by_geno_start, phen_seq_by_geno_duration, phen_seq_by_phen_state, phen_seq_by_phen_start, phen_seq_by_phen_duration
+  console.log("Process line: "); console.log(row);
+  var treatment = row.treatment;
   var run_id = row.run_id;
-  var indiv_seq_states = row.indiv_seq_states.split(",");
-  var indiv_seq_starts = row.indiv_seq_starts.split(",");
-  var indiv_seq_durations = row.indiv_seq_durations.split(",");
-  var phen_seq_states = row.phen_seq_states.split(",");
-  var phen_seq_starts = row.phen_seq_starts.split(",");
-  var phen_seq_durations = row.phen_seq_durations.split(",");
+  var indiv_seq_states = row.phen_seq_by_geno_state.split(",");
+  var indiv_seq_starts = row.phen_seq_by_geno_start.split(",");
+  var indiv_seq_durations = row.phen_seq_by_geno_duration.split(",");
+  var phen_seq_states = row.phen_seq_by_phen_state.split(",");
+  var phen_seq_starts = row.phen_seq_by_phen_start.split(",");
+  var phen_seq_durations = row.phen_seq_by_phen_duration.split(",");
   // Build a phenotype state sequence
+  console.log("Build phenotype sequence");
   var phen_seq = [];
   for (i = 0; i < phen_seq_states.length; i++) {
+    var state_tasks = new Set(phen_seq_states[i].split("-"));
+    var state = phen_seq_states[i];
+    if (state == "") { state = "NONE"; }
     phen_seq.push({
-      state: phen_seq_states[i],
+      raw_state: phen_seq_states[i],
+      state: state,
+      task_set: state_tasks,
       duration: +phen_seq_durations[i],
       start: +phen_seq_starts[i]
     });
   }
   // Build an individual state sequence
+  console.log("Build individual sequence");
   var indiv_seq = [];
   for (i = 0; i < indiv_seq_states.length; i++) {
+    var state_tasks = new Set(indiv_seq_states[i].split("-"));
+    var state = indiv_seq_states[i];
+    if (state == "") { state = "NONE"; }
     indiv_seq.push({
-      state: indiv_seq_states[i],
+      raw_state: indiv_seq_states[i],
+      state: state,
+      task_set: state_tasks,
       duration: +indiv_seq_durations[i],
       start: +indiv_seq_starts[i]
     });
@@ -88,6 +118,7 @@ var LineageStateSeqDataAccessor = function(row) {
 
   // Return data
   return {
+    treatment: treatment,
     run_id: run_id,
     phen_seq: phen_seq,
     indiv_seq: indiv_seq,
@@ -98,22 +129,39 @@ var IsSliced = function() {
   return $("#slice-toggle").prop("checked");
 }
 
+// NOTE - due to historical contingency, naming of return values is poor.
+var GetCompressionMode = function() {
+  compression_mode = $('input[name="lineage-state-compression-option"]:checked').val();
+  console.log(compression_mode);
+  if (compression_mode == "phenotype") {
+    return "phen_seq";
+  } else if (compression_mode == "genotype") {
+    return "indiv_seq";
+  } else {
+    return "UNDEFINED";
+  }
+}
+
 var GetVisParentWidth = function() {
   return $("#"+vis_configs.div_id).parent().width();
 };
 
 var BuildVisualization = function(data) {
-  console.log("Building lineage visualization!");
-
+  console.log("=> Building lineage visualization!");
+  // Filter data
+  data = data.filter(function(d) {
+    return d.treatment == vis_configs.focal_treatment;
+  });
   // Setup the canvas
   var chart_area = d3.select("#"+vis_configs.div_id);
   var frame = chart_area.append("svg");
   var canvas = frame.append("g").attr("class", "vis-canvas");
+  var legend = frame.append("g").attr("id", "vis-legend");
   // var env_canvas = canvas.append("g").attr("class", "env-canvas");
   // var lineage_canvas = canvas.append("g").attr("class", "lineage-canvas");
 
   // Collect some user input
-  var display_seq = "indiv_seq";
+  var display_seq = "phen_seq";
 
   // Call this function to redraw the visualization on screen.
   var DrawVisualization = function() {
@@ -150,12 +198,29 @@ var BuildVisualization = function(data) {
     }
 
     // Setup frame/canvas
+    /* PRE-LEGEND
     var frame_width = GetVisParentWidth() - 20; // Magic number!
     var canvas_height = (total_range * vis_configs.tick_height) + ((data_ranges.length-1) * vis_configs.slice_vspacer) // Here's the canvas height we want
     var frame_height = canvas_height + vis_configs.margin.top + vis_configs.margin.bottom;                             // Given desired canvas height, calculate frame height w/margins included.
     
     var canvas_width = Math.min(frame_width - vis_configs.margin.left - vis_configs.margin.right, 
                                 (data.length+1) * (vis_configs.max_seq_width+vis_configs.max_seq_hspacer) );
+
+    frame.attr("width", frame_width);
+    frame.attr("height", frame_height);
+    canvas.attr("transform", "translate(" + vis_configs.margin.left + "," + vis_configs.margin.top + ")");
+
+    */    
+
+    var frame_width = GetVisParentWidth() - 20; // Magic number!
+    var canvas_height = (total_range * vis_configs.tick_height) + ((data_ranges.length-1) * vis_configs.slice_vspacer) // Here's the canvas height we want
+    
+    var frame_height = canvas_height + vis_configs.margin.top + vis_configs.margin.bottom;                             // Given desired canvas height, calculate frame height w/margins included.
+    
+    var canvas_width = Math.min(frame_width - vis_configs.margin.left - vis_configs.margin.right, 
+                                (data.length+1) * (vis_configs.max_seq_width+vis_configs.max_seq_hspacer) );
+
+
   
     frame.attr("width", frame_width);
     frame.attr("height", frame_height);
@@ -203,7 +268,7 @@ var BuildVisualization = function(data) {
       var y_scale = d3.scaleLinear().domain(y_domain)
                                     .range(y_range)
                                     .clamp(true);
-      var y_axis = d3.axisLeft().scale(y_scale).ticks((slice_range.max - slice_range.min)/100);                  
+      var y_axis = d3.axisLeft().scale(y_scale).ticks((slice_range.max - slice_range.min)/vis_configs.time_tick_interval);                  
       d3.select(this).append("g").attr("class", "axis y-axis")
                                  .attr("id", "seq-vis_y-axis_r"+slice_id)
                                  .attr("transform", function(d) { return "translate(" + -1*(vis_configs.env_seq_width+vis_configs.env_seq_hspacer) +  ",0)"; } )
@@ -232,7 +297,7 @@ var BuildVisualization = function(data) {
                                                               });
                         var states = d3.select(this).selectAll("rect").data(seq_data);
                         states.enter().append("rect")
-                                      .attr("class", function(state, state_id) { return "state"; } )
+                                      .attr("class", function(state, state_id) { return "PHEN-STATE__"+state.state; } )
                                       .attr("state", function(state, state_id) { return state.state; })
                                       .attr("start", function(state, state_id) { return state.start; })
                                       .attr("end", function(state, state_id) { return state.start + state.duration; })
@@ -281,14 +346,27 @@ var BuildVisualization = function(data) {
     axes.selectAll("path").style("fill", "none")
                           .style("stroke", "black")
                           .style("shape-rendering","crispEdges");
-
-
-    // TODO - Update frame height here?
+    
+    // Add y axis label
+    canvas.selectAll(".axis-label").remove();
+    canvas.append("text").attr("class", "axis-label")
+                         .style("text-anchor", "middle")
+                         .attr("x", 0 - (canvas_height/2))
+                         .attr("y", 0 - vis_configs.margin.left / 1.5)
+                         .attr("transform", "rotate(-90)")
+                         .text("Time");
   }
 
+  // Hookup slice toggle.
   $("#slice-toggle").change(function() {
     console.log("Hello!");
     DrawVisualization();
+  });
+
+  // Hookup compression toggles.
+  $("input[type='radio'][name='lineage-state-compression-option']").on("change", function(){
+    display_seq = GetCompressionMode();
+    DrawVisualization()
   });
 
   $(window).resize(function() {
@@ -296,13 +374,16 @@ var BuildVisualization = function(data) {
   });
 
   DrawVisualization();
+
+  console.log("=>Finished building visualization");
   
 }
 
 var main = function() {
-  console.log("Hello world");
+  console.log("=> Enter main");
   d3.csv(vis_configs.data_file_path, LineageStateSeqDataAccessor)
     .then(BuildVisualization);
+  console.log("=> Done main");
 }
 
 // Call main!

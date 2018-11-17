@@ -3,37 +3,78 @@
   
   <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="sass/chg_env_lineage.css"/>
     <meta charset="utf-8">
-    <title>Project Name</title>
-
+    <title>Changing Environment | Tape of Life</title>
   </head>
 
   <body>
     <div class="container" id="main-container">
 
-    <div class="jumbotron">
-        <h1 class="display-4">Hello, world!</h1>
-        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-        <hr class="my-4">
+      <div class="jumbotron">
+        <h1 class="display-4">Changing Environment Lineages</h1>
+        <p class="lead"> place holder description text </p>
+        <!-- <hr class="my-4">
         <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
         <p class="lead">
           <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
-        </p>
+        </p> -->
       </div>
 
       <div class="row">
         <div class="col-sm-3">
+          
+
           <div style="position: sticky; top: 0;">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Config</h5>
-              <div id="time_slice_dash">
-                  Slice? <input type="checkbox" data-toggle="toggle" data-on="Full" data-off="Sliced" id="slice-toggle">
+            
+            <div class="row pt-1">
+              <div class="col">
+              <div class="card">
+                <h5 class="card-header">Configuration</h5>
+
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                    Slice: 
+                    <input type="checkbox" data-toggle="toggle" data-on="Full" data-off="Sliced" id="slice-toggle" checked>
+                  </li>
+                  <li class="list-group-item">
+                      Compress by:<br/>
+                      <input class="lineage-state-compression-option" id="compressed-by-genotype" type="radio" name="lineage-state-compression-option" value="genotype"> genotype</input>
+                      <input class="lineage-state-compression-option" id="compressed-by-phenotype" type="radio" name="lineage-state-compression-option" value="phenotype" checked> phenotype</input>
+                    </li>
+                </ul>
+
+              </div>
               </div>
             </div>
-          </div>
-        </div></div>
-        <div class="col-sm-9">
+
+            <div class="row pt-1">
+              <div class="col">
+              <div class="card legend-card">
+                <h5 class="card-header">Legend</h5>
+                
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                    Environment<br/>
+                    <span class="badge badge-secondary ENV-STATE__ENV-NAND" style="border-radius: 0;">ENV-NAND</span>
+                    <span class="badge badge-secondary ENV-STATE__ENV-NOT" style="border-radius: 0;">ENV-NAND</span>
+                  </li>
+                  <li class="list-group-item">
+                    Phenotype<br/>
+                    <span class="badge badge-secondary PHEN-STATE__NONE" style="border-radius: 0;">No tasks</span>
+                    <span class="badge badge-secondary PHEN-STATE__NAND" style="border-radius: 0;">NAND</span>
+                    <span class="badge badge-secondary PHEN-STATE__NOT" style="border-radius: 0;">NOT</span>
+                    <span class="badge badge-secondary PHEN-STATE__NOT-NAND" style="border-radius: 0;">NAND & NOT</span>
+                  </li>
+                </ul>
+              </div>
+              </div>
+            </div>
+
+          </div> 
+
+        </div> <!-- end column -->
+        <div class="col-sm-9 pt-1">
           <!-- Visualization panel -->
           <div class="card">
             <h5 class="card-header">Changing Environment Lineage Sequences</h5>

@@ -1,0 +1,51 @@
+// A few variables:
+$NAND_color:  #2ecc71;
+$NOT_color: #3498db;
+$NONE_color: #34495e;
+$NOT-NAND_color: #9b59b6;
+
+$ENVNAND_color: lighten($NAND_color, 25%);
+$ENVNOT_color: lighten($NOT_color, 25%);
+
+.vis-canvas {
+  .ENV-STATE__ENV-NAND {
+    fill: $ENVNAND_color;
+  }
+  .ENV-STATE__ENV-NOT {
+    fill: $ENVNOT_color;
+  }
+  .PHEN-STATE__NONE {
+    fill: $NONE_color;
+  }
+  .PHEN-STATE__NAND {
+    fill: $NAND_color;
+  }
+  .PHEN-STATE__NOT {
+    fill: $NOT_color;
+  }
+  .PHEN-STATE__NOT-NAND {
+    fill: $NOT-NAND_color;
+  }
+}
+
+.legend-card {
+  .ENV-STATE__ENV-NAND {
+    background-color: $ENVNAND_color;
+  }
+  .ENV-STATE__ENV-NOT {
+    background-color: $ENVNOT_color;
+  }
+  .PHEN-STATE__NONE {
+    background-color: $NONE_color;
+  }
+  .PHEN-STATE__NAND {
+    background-color: $NAND_color;
+  }
+  .PHEN-STATE__NOT {
+    background-color: $NOT_color;
+  }
+  .PHEN-STATE__NOT-NAND {
+    background-color: $NOT-NAND_color;
+  }
+}
+
