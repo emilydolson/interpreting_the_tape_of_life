@@ -22,11 +22,7 @@ var vis_configs = {
   env_seq: {
     states: ["ENV-NAND", "ENV-NOT"],
     interval: 200
-  },
-
-  legend_cwidth: 20,
-  legend_cheight: 20,
-  legend_vspacer: 10,
+  }
 
 };
 
@@ -156,12 +152,9 @@ var BuildVisualization = function(data) {
   var chart_area = d3.select("#"+vis_configs.div_id);
   var frame = chart_area.append("svg");
   var canvas = frame.append("g").attr("class", "vis-canvas");
-  var legend = frame.append("g").attr("id", "vis-legend");
-  // var env_canvas = canvas.append("g").attr("class", "env-canvas");
-  // var lineage_canvas = canvas.append("g").attr("class", "lineage-canvas");
 
   // Collect some user input
-  var display_seq = "phen_seq";
+  var display_seq = GetCompressionMode();
 
   // Call this function to redraw the visualization on screen.
   var DrawVisualization = function() {
@@ -197,21 +190,7 @@ var BuildVisualization = function(data) {
       return -1;
     }
 
-    // Setup frame/canvas
-    /* PRE-LEGEND
-    var frame_width = GetVisParentWidth() - 20; // Magic number!
-    var canvas_height = (total_range * vis_configs.tick_height) + ((data_ranges.length-1) * vis_configs.slice_vspacer) // Here's the canvas height we want
-    var frame_height = canvas_height + vis_configs.margin.top + vis_configs.margin.bottom;                             // Given desired canvas height, calculate frame height w/margins included.
-    
-    var canvas_width = Math.min(frame_width - vis_configs.margin.left - vis_configs.margin.right, 
-                                (data.length+1) * (vis_configs.max_seq_width+vis_configs.max_seq_hspacer) );
-
-    frame.attr("width", frame_width);
-    frame.attr("height", frame_height);
-    canvas.attr("transform", "translate(" + vis_configs.margin.left + "," + vis_configs.margin.top + ")");
-
-    */    
-
+    // Setup the frame/canvas.
     var frame_width = GetVisParentWidth() - 20; // Magic number!
     var canvas_height = (total_range * vis_configs.tick_height) + ((data_ranges.length-1) * vis_configs.slice_vspacer) // Here's the canvas height we want
     
@@ -293,7 +272,8 @@ var BuildVisualization = function(data) {
                                                                 var end_t = d.start + d.duration;
                                                                 var begins_in = begin_t >= slice_range.min && begin_t <= slice_range.max;
                                                                 var ends_in = end_t >= slice_range.min && end_t <= slice_range.max;
-                                                                return ends_in || begins_in;
+                                                                var over = (end_t > slice_range.max) && (begin_t < slice_range.min);
+                                                                return ends_in || begins_in || over;
                                                               });
                         var states = d3.select(this).selectAll("rect").data(seq_data);
                         states.enter().append("rect")
