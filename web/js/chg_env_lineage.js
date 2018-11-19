@@ -53,7 +53,6 @@ var GenEnvSequence = function(env_states, interval, end) {
 
 var LineageStateSeqDataAccessor = function(row) {
   // Header info: phen_seq_by_geno_state, phen_seq_by_geno_start, phen_seq_by_geno_duration, phen_seq_by_phen_state, phen_seq_by_phen_start, phen_seq_by_phen_duration
-  console.log("Process line: "); console.log(row);
   var treatment = row.treatment;
   var run_id = row.run_id;
   var indiv_seq_states = row.phen_seq_by_geno_state.split(",");
@@ -63,7 +62,6 @@ var LineageStateSeqDataAccessor = function(row) {
   var phen_seq_starts = row.phen_seq_by_phen_start.split(",");
   var phen_seq_durations = row.phen_seq_by_phen_duration.split(",");
   // Build a phenotype state sequence
-  console.log("Build phenotype sequence");
   var phen_seq = [];
   for (i = 0; i < phen_seq_states.length; i++) {
     var state_tasks = new Set(phen_seq_states[i].split("-"));
@@ -78,7 +76,6 @@ var LineageStateSeqDataAccessor = function(row) {
     });
   }
   // Build an individual state sequence
-  console.log("Build individual sequence");
   var indiv_seq = [];
   for (i = 0; i < indiv_seq_states.length; i++) {
     var state_tasks = new Set(indiv_seq_states[i].split("-"));
@@ -128,7 +125,6 @@ var IsSliced = function() {
 // NOTE - due to historical contingency, naming of return values is poor.
 var GetCompressionMode = function() {
   compression_mode = $('input[name="lineage-state-compression-option"]:checked').val();
-  console.log(compression_mode);
   if (compression_mode == "phenotype") {
     return "phen_seq";
   } else if (compression_mode == "genotype") {
@@ -158,7 +154,6 @@ var BuildVisualization = function(data) {
 
   // Call this function to redraw the visualization on screen.
   var DrawVisualization = function() {
-    console.log("===DRAW===");
     // canvas.remove("*");
     var display_full = !IsSliced();
     canvas.selectAll("g").remove();
@@ -224,9 +219,7 @@ var BuildVisualization = function(data) {
 
     var data_canvas = canvas.append("g").attr("class", "data-canvas");
     var slices = data_canvas.selectAll("g").data(data_ranges);
-    
-    console.log("Data ranges: "); console.log(data_ranges);
-    
+        
     slices.enter()
           .append("g").attr("class", "data-slice")
           .attr("rmin", function(d) { return d.min; })
@@ -277,7 +270,18 @@ var BuildVisualization = function(data) {
                                                               });
                         var states = d3.select(this).selectAll("rect").data(seq_data);
                         states.enter().append("rect")
-                                      .attr("class", function(state, state_id) { return "PHEN-STATE__"+state.state; } )
+                                      .attr("class", function(state, state_id) { 
+                                        if (state.task_set.has("NAND") && state.task_set.has("NOT")) {
+                                          return "PHEN-STATE__NOT-NAND";
+                                        } else if (state.task_set.has("NAND")) {
+                                          return "PHEN-STATE__NAND";
+                                        } else if (state.task_set.has("NOT")) {
+                                          return "PHEN-STATE__NOT";
+                                        } else {
+                                          return "PHEN-STATE__NONE";
+                                        }
+                                        // return "PHEN-STATE__"+state.state; 
+                                      })
                                       .attr("state", function(state, state_id) { return state.state; })
                                       .attr("start", function(state, state_id) { return state.start; })
                                       .attr("end", function(state, state_id) { return state.start + state.duration; })
@@ -339,7 +343,6 @@ var BuildVisualization = function(data) {
 
   // Hookup slice toggle.
   $("#slice-toggle").change(function() {
-    console.log("Hello!");
     DrawVisualization();
   });
 
@@ -360,10 +363,8 @@ var BuildVisualization = function(data) {
 }
 
 var main = function() {
-  console.log("=> Enter main");
   d3.csv(vis_configs.data_file_path, LineageStateSeqDataAccessor)
     .then(BuildVisualization);
-  console.log("=> Done main");
 }
 
 // Call main!
