@@ -141,6 +141,9 @@ def main():
                     if (gen >= lineage_target_generation):
                         target_update = int(time_details[i]["update"])
                         break
+                if target_update == 0:
+                    print("Something went wrong. Couldn't find target generation ({}) in {}".format(lineage_target_generation, time_fpath))
+                    exit(-1)
                 # Update:
                 print(target_update)
                 # Find appropriate detail file
@@ -148,7 +151,7 @@ def main():
                 det_file_updates.sort()
                 det_target_update = 0
                 for u in det_file_updates:
-                    if (u >= det_target_update):
+                    if (u >= target_update):
                         det_target_update = u
                         break
                 det_file = "detail-{}.spop".format(det_target_update)
@@ -163,7 +166,7 @@ def main():
                 out_det_fpath = out_det_fpath.strip("./")
                 print("Out detail path: " + str(out_det_fpath))
                 # Load analysis file
-                analyze_fname = "lineage-analyze-{}-{}-gen.cfg".format(treatment, run)
+                analyze_fname = "lineage-analyze-{}-{}-generation.cfg".format(treatment, run)
                 temp_ascript_content = ""
                 with open(avida_lineage_analysis_path, "r") as fp:
                     temp_ascript_content = fp.read()
