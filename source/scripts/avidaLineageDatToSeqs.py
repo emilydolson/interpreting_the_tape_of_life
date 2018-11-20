@@ -1,5 +1,7 @@
 '''
 Aggregate lineage .dat files, extract genotype sequences and compressed phenotype sequences.
+
+Also, make a bank of treatment, run_id, org_id, sequence, task profile
 '''
 
 import argparse, os, copy, errno, csv, subprocess, sys
@@ -64,8 +66,10 @@ def main():
     print("Runs by treatments: " + str(runs_by_treatment))
 
     # Loop over 
-    lineage_seq_content = "treatment,run_id,max_update,total_muts,total_substitutions,total_insertions,total_deletions,"
-    lineage_seq_content += "phen_seq_by_geno_state,phen_seq_by_geno_start,phen_seq_by_geno_duration"
+    lineage_seq_content =  "treatment,run_id,max_update,total_muts,total_substitutions,total_insertions,total_deletions,"
+    lineage_seq_content += "phen_seq_by_geno_unique_state_cnt,phen_seq_by_geno_length,phen_seq_by_geno_volatility,phen_seq_by_geno_chg_rate,"
+    lineage_seq_content += "phen_seq_by_geno_state,phen_seq_by_geno_start,phen_seq_by_geno_duration,"
+    lineage_seq_content += "phen_seq_by_phen_unique_state_cnt,phen_seq_by_phen_length,phen_seq_by_phen_volatility,phen_seq_by_phen_chg_rate,"
     lineage_seq_content += "phen_seq_by_phen_state,phen_seq_by_phen_start,phen_seq_by_phen_duration\n"
     
     for treatment in treatments:
@@ -83,6 +87,7 @@ def main():
             phenotype_seq_states = []
             phenotype_seq_starts = []
             phenotype_seq_durations = []
+            phenotype_seq_volatility = 0 # Number of state changes   
             sub_mut_cnt = 0
             ins_mut_cnt = 0
             dels_mut_cnt = 0
@@ -96,6 +101,9 @@ def main():
                     else: print("Unknown mutation type (" + str(mut) + ")!")
                 # State?
                 state = "-".join([task.upper() for task in tasks if details[i][task] == "1"])
+                if (i > 0):
+                    if (phenotype_seq_states[-1] != state):
+                        phenotype_seq_volatility += 1                
                 # Start?
                 start = int(details[i]["update born"])
                 if start < 0: start = 0 # Clamp start update at 0 for sanity
@@ -105,10 +113,19 @@ def main():
                 phenotype_seq_states.append(state)
             phenotype_seq_durations.append(int(max_update) - phenotype_seq_starts[-1])
             total_muts = sub_mut_cnt + ins_mut_cnt + dels_mut_cnt
+
+            phenotype_seq_unique_state_cnt = len(set(phenotype_seq_states))
+            phenotype_seq_length = len(phenotype_seq_states)
+            if (phenotype_seq_volatility):
+                phenotype_seq_chg_rate = sum(phenotype_seq_durations) / phenotype_seq_volatility
+            else:
+                phenotype_seq_chg_rate = 0
+            
             # Compress phenotype sequence
             compressed__phenotype_seq_starts = []
             compressed__phenotype_seq_states = []
             compressed__phenotype_seq_durations = []
+            compressed__phenotype_seq_volatility = 0
             for i in range(0, len(phenotype_seq_states)):
                 # If we're at the first state, just set start, states, and duration from source.
                 if (i == 0):
@@ -126,9 +143,20 @@ def main():
                     compressed__phenotype_seq_starts.append(phenotype_seq_starts[i])
                     compressed__phenotype_seq_states.append(phenotype_seq_states[i])
                     compressed__phenotype_seq_durations.append(phenotype_seq_durations[i])
+                    compressed__phenotype_seq_volatility += 1
+            
+            compressed__phenotype_seq_unique_state_cnt = len(set(compressed__phenotype_seq_states))
+            compressed__phenotype_seq_length = len(compressed__phenotype_seq_states)
+            if (compressed__phenotype_seq_volatility):
+                compressed__phenotype_seq_chg_rate = sum(compressed__phenotype_seq_durations) / compressed__phenotype_seq_volatility
+            else:
+                compressed__phenotype_seq_chg_rate = 0
+            
             # Write line of content!
             # "treatment,run_id,max_update,total_muts,total_substitutions,total_insertions,total_deletions,"
+            #  phen_seq_by_geno_unique_state_cnt, phen_seq_by_geno_length, phen_seq_by_geno_volatility, phen_seq_by_geno_chg_rate
             # "phen_seq_by_geno_state,phen_seq_by_geno_start,phen_seq_by_geno_duration"
+            #  phen_seq_by_phen_unique_state_cnt, phen_seq_by_phen_length, phen_seq_by_phen_volatility, phen_seq_by_phen_chg_rate
             # "phen_seq_by_phen_state,phen_seq_by_phen_start,phen_seq_by_phen_duration\n"
             phen_seq_by_geno_state = "\"{}\"".format(",".join(phenotype_seq_states))
             phen_seq_by_geno_start = "\"{}\"".format(",".join(map(str, phenotype_seq_starts)))
@@ -137,7 +165,12 @@ def main():
             phen_seq_by_phen_start = "\"{}\"".format(",".join(map(str, compressed__phenotype_seq_starts)))
             phen_seq_by_phen_duration = "\"{}\"".format(",".join(map(str, compressed__phenotype_seq_durations)))
             
-            lineage_seq_content += ",".join(map(str, [treatment, run, max_update, total_muts, sub_mut_cnt, ins_mut_cnt, dels_mut_cnt, phen_seq_by_geno_state, phen_seq_by_geno_start, phen_seq_by_geno_duration, phen_seq_by_phen_state, phen_seq_by_phen_start, phen_seq_by_phen_duration])) + "\n"
+            lineage_seq_content += ",".join(map(str, [treatment, run, max_update, total_muts, sub_mut_cnt, ins_mut_cnt, dels_mut_cnt, 
+                                                      phenotype_seq_unique_state_cnt,phenotype_seq_length,phenotype_seq_volatility,phenotype_seq_chg_rate,
+                                                      phen_seq_by_geno_state, phen_seq_by_geno_start, phen_seq_by_geno_duration, 
+                                                      compressed__phenotype_seq_unique_state_cnt,compressed__phenotype_seq_length,compressed__phenotype_seq_volatility,compressed__phenotype_seq_chg_rate,
+                                                      phen_seq_by_phen_state, phen_seq_by_phen_start, phen_seq_by_phen_duration])) + "\n"
+
     # Write out sequences to file
     with open("lineage_sequences.csv", "w") as fp:
         fp.write(lineage_seq_content)
