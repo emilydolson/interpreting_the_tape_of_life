@@ -64,7 +64,8 @@ def main():
     print("Runs by treatments: " + str(runs_by_treatment))
 
     # Loop over 
-    lineage_seq_content =  "treatment,run_id,max_update,total_muts,total_substitutions,total_insertions,total_deletions,"
+    lineage_seq_content =  "treatment,run_id,pull_condition,"
+    lineage_seq_content += "max_update,total_muts,total_substitutions,total_insertions,total_deletions,"
     lineage_seq_content += "phen_seq_by_geno_unique_state_cnt,phen_seq_by_geno_length,phen_seq_by_geno_volatility,phen_seq_by_geno_chg_rate,"
     lineage_seq_content += "phen_seq_by_geno_state,phen_seq_by_geno_start,phen_seq_by_geno_duration,"
     lineage_seq_content += "phen_seq_by_phen_unique_state_cnt,phen_seq_by_phen_length,phen_seq_by_phen_volatility,phen_seq_by_phen_chg_rate,"
@@ -82,6 +83,16 @@ def main():
                 details = ParseDetailFile(dat_fpath)
                 # Max update
                 max_update = dat_fpath.split("-")[-1].split(".")[0]
+                # Pull id
+                pull_id = dat.replace("lineage_details-", "")
+                pull_id = pull_id.replace(".dat", "")
+                if "gen" in pull_id:
+                    pull_id = pull_id.split("-")[0].replace("gen", "gen-")
+                elif "update" in pull_id:
+                    pull_id = pull_id
+                else:
+                    print("BAD PULL ID! " + dat)
+                    exit(-1)
                 # Extract phenotype sequence
                 phenotype_seq_states = []
                 phenotype_seq_starts = []
@@ -164,7 +175,7 @@ def main():
                 phen_seq_by_phen_start = "\"{}\"".format(",".join(map(str, compressed__phenotype_seq_starts)))
                 phen_seq_by_phen_duration = "\"{}\"".format(",".join(map(str, compressed__phenotype_seq_durations)))
                 
-                lineage_seq_content += ",".join(map(str, [treatment, run, max_update, total_muts, sub_mut_cnt, ins_mut_cnt, dels_mut_cnt, 
+                lineage_seq_content += ",".join(map(str, [treatment, run, pull_id, max_update, total_muts, sub_mut_cnt, ins_mut_cnt, dels_mut_cnt, 
                                                         phenotype_seq_unique_state_cnt,phenotype_seq_length,phenotype_seq_volatility,phenotype_seq_chg_rate,
                                                         phen_seq_by_geno_state, phen_seq_by_geno_start, phen_seq_by_geno_duration, 
                                                         compressed__phenotype_seq_unique_state_cnt,compressed__phenotype_seq_length,compressed__phenotype_seq_volatility,compressed__phenotype_seq_chg_rate,
