@@ -1,7 +1,5 @@
 '''
 Aggregate lineage .dat files, extract genotype sequences and compressed phenotype sequences.
-
-Also, make a bank of treatment, run_id, org_id, sequence, task profile
 '''
 
 import argparse, os, copy, errno, csv, subprocess, sys
