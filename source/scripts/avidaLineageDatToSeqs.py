@@ -155,8 +155,7 @@ def main():
                         compressed__phenotype_seq_starts.append(phenotype_seq_starts[i])
                         compressed__phenotype_seq_states.append(phenotype_seq_states[i])
                         compressed__phenotype_seq_durations.append(phenotype_seq_durations[i])
-                        compressed__phenotype_seq_volatility += 1
-                
+                        compressed__phenotype_seq_volatility += 1    
                 compressed__phenotype_seq_unique_state_cnt = len(set(compressed__phenotype_seq_states))
                 compressed__phenotype_seq_length = len(compressed__phenotype_seq_states)
                 compressed__phenotype_seq_avg_state_duration = sum(compressed__phenotype_seq_durations) / len(compressed__phenotype_seq_durations)
