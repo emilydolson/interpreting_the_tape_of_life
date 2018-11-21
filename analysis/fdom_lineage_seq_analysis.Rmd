@@ -1,0 +1,64 @@
+---
+title: "Dominant Lineage Sequence Analyses"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load libraries
+library(ggplot2)
+library(readr)
+library(reshape2)
+library(dplyr)
+library(scales)
+library(tidyr)
+```
+
+```{r}
+# Extract relevant data from CSV
+seq_data <- read_csv("../data/lineage_sequences.csv", 
+                      col_types=cols_only(treatment=col_character(),
+                                          run_id=col_character(),
+                                          pull_condition=col_character(),
+                                          max_update=col_integer(),
+                                          total_muts=col_integer(),
+                                          total_substitutions=col_integer(),
+                                          total_insertions=col_integer(),
+                                          total_deletions=col_integer(),
+                                          phen_seq_by_geno_unique_state_cnt=col_integer(),
+                                          phen_seq_by_geno_length=col_integer(),
+                                          phen_seq_by_geno_volatility=col_integer(),
+                                          phen_seq_by_geno_chg_rate=col_double(),
+                                          phen_seq_by_phen_unique_state_cnt=col_integer(),
+                                          phen_seq_by_phen_length=col_integer(),
+                                          phen_seq_by_phen_volatility=col_integer(),
+                                          phen_seq_by_phen_chg_rate=col_double())
+                     )
+
+# Separate generation 10k data and update 200k data
+generation_data <- filter(seq_data, pull_condition == "gen-10000")
+update_data <- filter(seq_data, pull_condition == "update-200000")
+```
+
+```{r}
+
+melted_generation_data <- melt(generation_data, id.vars=c("treatment", "run_id", "pull_condition", "max_update"))
+gens_vars_of_interest <- melted_generation_data %>% filter(variable %in% c("total_muts", "total_substitutions", "total_insertions", "total_deletions", "phen_seq_by_geno_unique_state_cnt","phen_seq_by_geno_length","phen_seq_by_geno_volatility","phen_seq_by_geno_chg_rate","phen_seq_by_phen_unique_state_cnt","phen_seq_by_phen_length","phen_seq_by_phen_volatility","phen_seq_by_phen_chg_rate"))
+
+
+# Plot by generations
+ggplot(gens_vars_of_interest, aes(x=treatment, y=value, fill=treatment, color=treatment, group=treatment)) + facet_wrap(~variable, scales="free") + geom_boxplot()
+
+```
+
+```{r}
+
+melted_update_data <- melt(update_data, id.vars=c("treatment", "run_id", "pull_condition", "max_update"))
+update_vars_of_interest <- melted_update_data %>% filter(variable %in% c("total_muts", "total_substitutions", "total_insertions", "total_deletions", "phen_seq_by_geno_unique_state_cnt","phen_seq_by_geno_length","phen_seq_by_geno_volatility","phen_seq_by_geno_chg_rate","phen_seq_by_phen_unique_state_cnt","phen_seq_by_phen_length","phen_seq_by_phen_volatility","phen_seq_by_phen_chg_rate"))
+
+
+# Plot by generations
+ggplot(update_vars_of_interest, aes(x=treatment, y=value, fill=treatment, color=treatment, group=treatment)) + facet_wrap(~variable, scales="free") + geom_boxplot()
+
+```
