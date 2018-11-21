@@ -127,7 +127,11 @@ def main():
                 phenotype_seq_unique_state_cnt = len(set(phenotype_seq_states))
                 phenotype_seq_length = len(phenotype_seq_states)
                 phenotype_seq_avg_state_duration = sum(phenotype_seq_durations) / len(phenotype_seq_durations) #   pull out variance of durations
-                phenotype_seq_state_duration_variance = statistics.variance(phenotype_seq_durations)
+                
+                if (len(phenotype_seq_durations) > 1):
+                    phenotype_seq_state_duration_variance = statistics.variance(phenotype_seq_durations) 
+                else:
+                    phenotype_seq_state_duration_variance = 0
                 
                 # Compress phenotype sequence
                 compressed__phenotype_seq_starts = []
@@ -156,8 +160,10 @@ def main():
                 compressed__phenotype_seq_unique_state_cnt = len(set(compressed__phenotype_seq_states))
                 compressed__phenotype_seq_length = len(compressed__phenotype_seq_states)
                 compressed__phenotype_seq_avg_state_duration = sum(compressed__phenotype_seq_durations) / len(compressed__phenotype_seq_durations)
-                compressed__phenotype_seq_state_duration_variance = statistics.variance(compressed__phenotype_seq_durations)
-
+                if (len(compressed__phenotype_seq_durations) > 1):
+                    compressed__phenotype_seq_state_duration_variance = statistics.variance(compressed__phenotype_seq_durations)
+                else:
+                    compressed__phenotype_seq_state_duration_variance = 0
                 # Write line of content!
                 # "treatment,run_id,max_update,total_muts,total_substitutions,total_insertions,total_deletions,"
                 #  phen_seq_by_geno_unique_state_cnt, phen_seq_by_geno_length, phen_seq_by_geno_volatility, phen_seq_by_geno_chg_rate
