@@ -64,6 +64,10 @@
 % - [ ] Add in avida-related citations
 % --- TEXT ---
 % - [ ] make sure we mention difference in how we pull out representative lineages in avida vs. benchmark problems
+% - [ ] Decide/work out task vs. function for boolean logic computations
+%       - no-task to minimal environment
+% - [ ] Switch - 'expected' to 'expects' => smooth out tense, make consistent
+% - [ ] Include more experiment config description in methods: updates, mutations(?), etc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Alternative titles:
@@ -128,7 +132,7 @@ For each metric, we discuss its application and our expectation for what it can 
 % OLD TEXT: We evaluate our intuition on a set of two-dimensional, real-valued optimization problems under a range of mutation rates and selection strengths. 
 We evaluate our intuition in two computational contexts: first, on a set of two-dimensional, real-valued optimization problems under a range of mutation rates and selection strengths and, second, on four qualitatively different environments in the Avida Digital Evolution Platform 
 % @AML: We probably want to mention what types of Avida environments we use...
-(the no task environment, the logic-9 environment with unlimited resources, the logic-9 with limited resources, and a simple changing environment).
+(the minimal environment, the logic-9 environment with unlimited resources, the logic-9 with limited resources, and a simple changing environment).
 For simplicity, we restrict our attention to asexually reproducing populations; however, we suggest how these metrics can be extended to sexual populations. 
 
 In addition to demonstrating a range of metrics that are %immediately applicable and
@@ -380,38 +384,40 @@ We evolved thirty replicate populations of size 500 in four different environmen
 % - Insert relevant experiment parameters that are generic across treatments
 
 
-% ENVIRONMENT: no task - describe, intuitions w/respect to metrics
+% ENVIRONMENT: minimal - describe, intuitions w/respect to metrics
 In the \textbf{no-task environment}, we did not reward any computational tasks. Because these digital organisms cannot influence their execution speed by performing computational tasks, selection pressure is entirely focused on optimizing the efficiency at which organisms can self-replicate. 
 Thus, we expected lineages with short generation times to be most successful, resulting in long lineages comprising many individuals. This no-task environment has only a single niche, so we expected to see low phylogenetic diversity and frequent population-wide selective sweeps, each leading to a change in most recent common ancestor (MRCA).
 % Todo - work in sentence comparing no-task environment to LTEE
 
 
 % ENVIRONMENT: logic 9 - describe, intuitions w/respect to metrics
-In the \textbf{logic-9 environment}, we rewarded the performance of all non-trivial one- and two-input boolean logic functions: NAND, NOT, OR-NOT, AND, OR, AND-NOT, NOR, XOR, and EQUALS (for more information on these tasks in Avida see \citep{lenski_evolutionary_2003}). In addition to selection pressure for efficient self-replication, there is selection pressure for organisms to improve their instruction execution speed by performing logic functions. 
-Logic-9, like the no task environment, is a single-niche environment, so we expected to see low phylogentic diversity and frequent selective sweeps. However, because this environment rewards performing tasks, we expected to see lineages with longer generation times than those in the no-task environment. 
-In addition to looking at individuals along a lineage, we compressed lineages into sequences of phenotypic task profiles. Each of the nine rewarded boolean logic functions are of varying complexity to compute, NAND and NOT being the simplest and EQUALS being the most complex. Further, in the logic-9 environment, simpler tasks are building blocks for the more complex tasks. 
+In the \textbf{logic-9 environment}, we rewarded the performance of all non-trivial one- and two-input Boolean logic functions: NAND, NOT, OR-NOT, AND, OR, AND-NOT, NOR, XOR, and EQUALS (for more information on these tasks in Avida see \citep{lenski_evolutionary_2003}). In addition to selection pressure for efficient self-replication, there is selection pressure for organisms to improve their instruction execution speed by performing logic functions. 
+Logic-9, like the minimal environment, is a single-niche environment, so we expected to see low phylogentic diversity and frequent selective sweeps. However, because this environment rewards performing tasks, we expected to see lineages with longer generation times than those in the no-task environment. 
+In addition to looking at individuals along a lineage, we compressed lineages into sequences of phenotypic task profiles. Each of the nine rewarded Boolean logic functions are of varying complexity to compute, NAND and NOT being the simplest and EQUALS being the most complex. Further, in the logic-9 environment, simpler tasks are building blocks for the more complex tasks. 
 As such, we expected to see tasks appear on lineages in roughly the order of task complexity.
 We can also use lineages compressed into sequences of task profiles to measure the rate of task acquisition (phenotypic volatility) or to look for trends in how long lineages spend in a particular phenotypic state, which can help untangle which phenotypic transitions might be the most challenging.
 
 
 % ENVIRONMENT: limited resource - describe, intuitions w/respect to metrics
 % @AML: Should we talk about inflow/outflow rates?
-Like the logic-9 environment, the \textbf{limited resource environment} rewards the performance of all non-trivial one- and two-input boolean logic functions; each of these computational tasks, however, is associated with a limited pool of resources. When an organism performs one of the nine logic tasks, it consumes resources associated with that particular task (lowering its concentration) in proportion to the resource's availability. 
-Rather than adjusting organisms' execution speeds based directly on task performance, in the limited resource environment, an organism's execution speed is adjusted as a function of the amount of resources its collected.
-The limited resource environment has been shown to support stable ecologies via negative frequency-dependent selection [CITE]. 
+Like the logic-9 environment, the \textbf{limited resource environment} rewards the performance of all non-trivial one- and two-input Boolean logic functions; each of these computational functions, however, is associated with a limited pool of resources. When an organism performs one of the nine logic functions, it consumes resources associated with that particular function (lowering its concentration) in proportion to the resource's availability. 
+Rather than adjusting organisms' execution speeds based directly on task performance, in the limited resource environment, an organism's execution speed is adjusted as a function of the amount of resources it has collected.
+The limited resource environment has been shown to support stable ecologies via negative frequency-dependent selection \citep{cooper_evolution_2003}. 
 Here, we expected the phylogeny metrics to reveal high phylogentic diversity relative to the other three environments. 
-Because previous work has shown that the limited resource environment supports the stable coexistence of multiple ecotypes, we expected infrequent population-wide selective sweeps, resulting in the MRCA existing early in a run.
+Because previous work has shown that the limited resource environment supports the stable coexistence of multiple ecotypes, we expect infrequent changes in the MRCA.
 
 % ENVIRONMENT: changing - describe, intuitions w/respect to metrics
 % - Description: alternatively reward and punish nand/not tasks
 % - Cycling environment => Expect set of phenotypic states traversed by lineage to be low, but the total number of phenotype changes to be high
 % - Expect rate of phenotype changes to approximate the environment change rate
 %In the \textbf{changing environment}, populations were subjected to a cyclical, two-phase environment. 
-In the \textbf{changing environment}, the environment cycled between equal-length periods (200 updates* [explain updates, maybe in footnote]) of two opposing environmental states: ENV-NAND (where we rewarded NAND and punished NOT) and ENV-NOT (where we rewarded NOT and punished NAND). 
+In the \textbf{changing environment}, the rewarded functions cycled between 
+%equal-length periods (200 updates* [explain updates, maybe in footnote]) of 
+two opposing states: ENV-NAND (where we rewarded NAND and punished NOT) and ENV-NOT (where we rewarded NOT and punished NAND). 
 ENV-NAND and ENV-NOT were configured such that no phenotype can be optimal across both environment states. To achieve maximal fitness in either ENV-NAND or ENV-NOT, organisms must perform \textit{only} the focal task.
 In such environments, successful lineages should move to occupy a region of genotype space such that it is easier to mutationally toggle between a phenotype of only performing NAND and a phenotype of only performing NOT [CITE - some of Rose's work for this].
-In this treatment, we expected to see a high number of phenotype changes but a low total of unique phenotypes along evolved lineages.
-Further, we expect the rate of phenotypic change along successful lineages to approach the rate of environmental change, as successful lineages would have been those more likely to produce offspring well adapted the next environment.
+In this treatment, we expected to see a high number of phenotype changes but a low total number of unique phenotypes along evolved lineages.
+Further, we expect the rate of phenotypic change along successful lineages to approach the rate of environmental change, as these lineages would have been more likely to produce offspring well adapted to the next environment.
 
 % @AML: Need a sentence pointing out that specific configurations for all of these runs can be found in BLAH.
 
