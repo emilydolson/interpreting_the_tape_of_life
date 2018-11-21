@@ -46,11 +46,17 @@ def main():
 
     return_code = subprocess.call("cp {} {}".format(os.path.join(avida_junk_path, "*"), output_dump_dir), shell=True)
     
-    sequence_set = set([])
+    
     for treatment in treatments:
         runs = runs_by_treatment[treatment]
         for run in runs:
+            sequence_set = set([])
             print("Collecting from {}[{}]".format(treatment, run))
+            phylo_spop_fname = "phylogeny-sequences-{}-{}.spop".format(treatment, run)
+            # Have we already collected this in a previous attempt?
+            if (os.path.isfile(os.path.join(output_dump_dir, phylo_spop_fname))):
+                print("  Already collected this phylo seq data, skipping.")
+                continue
             run_dir = os.path.join(data_directory, treatment, run)
             # Grab all of the phylogeny files
             phylo_snapshots = [f for f in os.listdir(run_dir) if "phylogeny-snapshot-" in f]
@@ -66,38 +72,37 @@ def main():
                     if line == "": continue
                     sequence = line.split(",")[header_lu["sequence"]]
                     sequence_set.add(sequence)
-    # Sequence set should have *all* sequences
-    print("For your entertainment, num sequences: {}".format(len(sequence_set)))
-
-    phylo_seq_detail_content = "#filetype genotype_data\n"
-    phylo_seq_detail_content += "#format id hw_type inst_set sequence length\n\n"
-    id_index = 0
-    for seq in sequence_set:
-        phylo_seq_detail_content += " ".join(map(str,[id_index, "0", "heads_default", seq, len(seq)])) + "\n"
-        id_index += 1
-    
-    with open(os.path.join(output_dump_dir, "phylogeny-sequences.spop"), "w") as fp:
-        fp.write(phylo_seq_detail_content)
+            # For each run, write out a detail file.
+            print("  For your entertainment, num sequences: {}".format(len(sequence_set)))
+            
+            phylo_seq_detail_content = "#filetype genotype_data\n"
+            phylo_seq_detail_content += "#format id hw_type inst_set sequence length\n\n"
+            id_index = 0
+            for seq in sequence_set:
+                phylo_seq_detail_content += " ".join(map(str,[id_index, "0", "heads_default", seq, len(seq)])) + "\n"
+                id_index += 1
+            with open(os.path.join(output_dump_dir, phylo_spop_fname), "w") as fp:
+                fp.write(phylo_seq_detail_content)
     
     # Run analyze mode!
-    det_file = "phylogeny-sequences.spop"
-    # Analysis parameters (input file path and output file path)
-    in_det_fpath = os.path.join(det_file)
-    
-    out_det_fpath = os.path.join("all-phylogeny-genotypes.dat")
-    print("Out detail path: " + str(out_det_fpath))
-    # Load analysis file
-    analyze_fname = "phylo-seq-analyze.cfg"
-    temp_ascript_content = ""
-    with open(avida_genotypes_analysis_path, "r") as fp:
-        temp_ascript_content = fp.read()
-    temp_ascript_content = temp_ascript_content.replace("<input_file>", in_det_fpath)
-    temp_ascript_content = temp_ascript_content.replace("<output_file>", out_det_fpath)
-    with open(os.path.join(output_dump_dir, analyze_fname), "w") as fp:
-        fp.write(temp_ascript_content)
-    # Run analysis!
-    avida_cmd = "./avida -a -set ANALYZE_FILE {}".format(analyze_fname)
-    return_code = subprocess.call(avida_cmd, shell=True, cwd=output_dump_dir)
+    # det_file = "phylogeny-sequences.spop"
+    # # Analysis parameters (input file path and output file path)
+    # in_det_fpath = os.path.join(det_file)
+
+    # out_det_fpath = os.path.join("all-phylogeny-genotypes.dat")
+    # print("Out detail path: " + str(out_det_fpath))
+    # # Load analysis file
+    # analyze_fname = "phylo-seq-analyze.cfg"
+    # temp_ascript_content = ""
+    # with open(avida_genotypes_analysis_path, "r") as fp:
+    #     temp_ascript_content = fp.read()
+    # temp_ascript_content = temp_ascript_content.replace("<input_file>", in_det_fpath)
+    # temp_ascript_content = temp_ascript_content.replace("<output_file>", out_det_fpath)
+    # with open(os.path.join(output_dump_dir, analyze_fname), "w") as fp:
+    #     fp.write(temp_ascript_content)
+    # # Run analysis!
+    # avida_cmd = "./avida -a -set ANALYZE_FILE {}".format(analyze_fname)
+    # return_code = subprocess.call(avida_cmd, shell=True, cwd=output_dump_dir)
             
     
 
