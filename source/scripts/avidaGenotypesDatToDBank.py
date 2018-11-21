@@ -5,7 +5,7 @@ import argparse, os, copy, errno, csv, subprocess, sys
 
 output_dump_dir = "./avida_analysis_dump"
 
-treatment_whitelist = ["change", "l9"]
+treatment_whitelist = ["change", "l9", "limres", "empty"]
 
 tasks = ["not", "nand", "and", "ornot", "or", "andnot", "nor", "xor", "equals"]
 
