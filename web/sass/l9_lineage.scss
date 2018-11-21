@@ -1,0 +1,90 @@
+// Task color variables
+// Task set: ["NOT", "NAND", "AND", "ORNOT", "OR", "ANDNOT", "NOR", "XOR", "EQUALS"]
+$NAND_color: #2ecc71;
+$NOT_color: #00BCD4;
+$AND_color: #3F51B5;
+$ORNOT_color: #9b59b6;
+$OR_color: #E91E63;
+$ANDNOT_color: #CDDC39;
+$NOR_color: #f1c40f;
+$XOR_color: #e67e22;
+$EQUALS_color: #e74c3c;
+
+
+.vis-canvas {
+  .task-indicator {
+    fill: grey;
+  }
+  .PHEN-TASK__NAND {
+    fill: $NAND_color;
+  }
+  .PHEN-TASK__NOT {
+    fill: $NOT_color;
+  }
+
+  .PHEN-TASK__AND {
+    fill: $AND_color;
+  }
+  
+  .PHEN-TASK__ORNOT {
+    fill: $ORNOT_color;
+  }
+  
+  .PHEN-TASK__OR {
+    fill: $OR_color;
+  }
+  
+  .PHEN-TASK__ANDNOT {
+    fill: $ANDNOT_color;
+  }
+  
+  .PHEN-TASK__NOR {
+    fill: $NOR_color;
+  }
+  
+  .PHEN-TASK__XOR {
+    fill: $XOR_color;
+  }
+
+  .PHEN-TASK__EQUALS {
+    fill: $EQUALS_color;
+  }
+}
+
+
+.legend-card {
+  .PHEN-TASK__NAND {
+    background-color: $NAND_color;
+  }
+  .PHEN-TASK__NOT {
+    background-color: $NOT_color;
+  }
+
+  .PHEN-TASK__AND {
+    background-color: $AND_color;
+  }
+  
+  .PHEN-TASK__ORNOT {
+    background-color: $ORNOT_color;
+  }
+  
+  .PHEN-TASK__OR {
+    background-color: $OR_color;
+  }
+  
+  .PHEN-TASK__ANDNOT {
+    background-color: $ANDNOT_color;
+  }
+  
+  .PHEN-TASK__NOR {
+    background-color: $NOR_color;
+  }
+  
+  .PHEN-TASK__XOR {
+    background-color: $XOR_color;
+  }
+
+  .PHEN-TASK__EQUALS {
+    background-color: $EQUALS_color;
+  }
+}

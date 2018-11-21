@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+  
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="sass/l9_lineage.css"/>
+    <meta charset="utf-8">
+    <title>Logic 9 | Tape of Life</title>
+  </head>
+
+  <body>
+    <div class="container" id="main-container">
+
+      <div class="jumbotron">
+        <h1 class="display-4">Logic 9 Environment Lineages</h1>
+        <p class="lead"> place holder description text </p>
+        <!-- <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <p class="lead">
+          <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+        </p> -->
+      </div>
+
+      <div class="row">
+        <div class="col-sm-3">
+          
+
+          <div style="position: sticky; top: 0;">
+            
+            <div class="row pt-1">
+              <div class="col">
+              <div class="card">
+                <h5 class="card-header">Configuration</h5>
+
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                    Slice: 
+                    <input type="checkbox" data-toggle="toggle" data-on="Full" data-off="Sliced" id="slice-toggle" checked>
+                  </li>
+                  <li class="list-group-item">
+                      Compress by:<br/>
+                      <input class="lineage-state-compression-option" id="compressed-by-genotype" type="radio" name="lineage-state-compression-option" value="genotype"> genotype</input>
+                      <input class="lineage-state-compression-option" id="compressed-by-phenotype" type="radio" name="lineage-state-compression-option" value="phenotype" checked> phenotype</input>
+                    </li>
+                </ul>
+
+              </div>
+              </div>
+            </div>
+
+            <div class="row pt-1">
+              <div class="col">
+              <div class="card legend-card">
+                <h5 class="card-header">Legend</h5>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                      Task Performance<br/>
+                      <span class="badge badge-secondary PHEN-TASK__NAND" style="border-radius: 0;">NAND</span>
+                      <span class="badge badge-secondary PHEN-TASK__NOT" style="border-radius: 0;">NOT</span>
+                      <span class="badge badge-secondary PHEN-TASK__AND" style="border-radius: 0;">AND</span>
+                      <span class="badge badge-secondary PHEN-TASK__ORNOT" style="border-radius: 0;">ORNOT</span>
+                      <span class="badge badge-secondary PHEN-TASK__OR" style="border-radius: 0;">OR</span>
+                      <span class="badge badge-secondary PHEN-TASK__ANDNOT" style="border-radius: 0;">ANDNOT</span>
+                      <span class="badge badge-secondary PHEN-TASK__NOR" style="border-radius: 0;">NOR</span>
+                      <span class="badge badge-secondary PHEN-TASK__XOR" style="border-radius: 0;">XOR</span>
+                      <span class="badge badge-secondary PHEN-TASK__EQUALS" style="border-radius: 0;">EQUALS</span>
+                    </li>
+                  </ul>
+              </div>
+              </div>
+            </div>
+
+          </div> 
+
+        </div> <!-- end column -->
+        <div class="col-sm-9 pt-1">
+          <!-- Visualization panel -->
+          <div class="card">
+            <h5 class="card-header">Logic 9 Environment Lineage Sequences</h5>
+            <div class="card-body">
+              <div id="l9_lineage_vis"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- end container -->
+
+    <!-- Bootstrap stuff -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- D3 stuff -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <!-- Visualization stuff -->
+    <script src="js/l9_lineage.js"></script>
+    <!-- Misc. -->
+    <!-- <script>
+      $('#main-container').scroll(function() { 
+        $('#vis-config-card').animate({top:$(this).scrollTop()});
+      });
+    </script> -->
+  </body>
+</html>
