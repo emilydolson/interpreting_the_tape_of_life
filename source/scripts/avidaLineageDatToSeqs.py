@@ -2,7 +2,7 @@
 Aggregate lineage .dat files, extract genotype sequences and compressed phenotype sequences.
 '''
 
-import argparse, os, copy, errno, csv, subprocess, sys
+import argparse, os, copy, errno, csv, subprocess, sys, statistics
 
 output_dump_dir = "./avida_analysis_dump"
 
@@ -66,9 +66,9 @@ def main():
     # Loop over 
     lineage_seq_content =  "treatment,run_id,pull_condition,"
     lineage_seq_content += "max_update,total_muts,total_substitutions,total_insertions,total_deletions,"
-    lineage_seq_content += "phen_seq_by_geno_unique_state_cnt,phen_seq_by_geno_length,phen_seq_by_geno_volatility,phen_seq_by_geno_chg_rate,"
+    lineage_seq_content += "phen_seq_by_geno_unique_state_cnt,phen_seq_by_geno_length,phen_seq_by_geno_volatility,phen_seq_by_geno_avg_state_duration,phen_seq_by_geno_state_duration_variance,"
     lineage_seq_content += "phen_seq_by_geno_state,phen_seq_by_geno_start,phen_seq_by_geno_duration,"
-    lineage_seq_content += "phen_seq_by_phen_unique_state_cnt,phen_seq_by_phen_length,phen_seq_by_phen_volatility,phen_seq_by_phen_chg_rate,"
+    lineage_seq_content += "phen_seq_by_phen_unique_state_cnt,phen_seq_by_phen_length,phen_seq_by_phen_volatility,phen_seq_by_phen_avg_state_duration,phen_seq_by_pheno_state_duration_variance,"
     lineage_seq_content += "phen_seq_by_phen_state,phen_seq_by_phen_start,phen_seq_by_phen_duration\n"
     
     for treatment in treatments:
@@ -126,10 +126,8 @@ def main():
 
                 phenotype_seq_unique_state_cnt = len(set(phenotype_seq_states))
                 phenotype_seq_length = len(phenotype_seq_states)
-                if (phenotype_seq_volatility):
-                    phenotype_seq_chg_rate = sum(phenotype_seq_durations) / phenotype_seq_volatility
-                else:
-                    phenotype_seq_chg_rate = 0
+                phenotype_seq_avg_state_duration = sum(phenotype_seq_durations) / len(phenotype_seq_durations) #   pull out variance of durations
+                phenotype_seq_state_duration_variance = statistics.variance(phenotype_seq_durations)
                 
                 # Compress phenotype sequence
                 compressed__phenotype_seq_starts = []
@@ -157,11 +155,9 @@ def main():
                 
                 compressed__phenotype_seq_unique_state_cnt = len(set(compressed__phenotype_seq_states))
                 compressed__phenotype_seq_length = len(compressed__phenotype_seq_states)
-                if (compressed__phenotype_seq_volatility):
-                    compressed__phenotype_seq_chg_rate = sum(compressed__phenotype_seq_durations) / compressed__phenotype_seq_volatility
-                else:
-                    compressed__phenotype_seq_chg_rate = 0
-                
+                compressed__phenotype_seq_avg_state_duration = sum(compressed__phenotype_seq_durations) / len(compressed__phenotype_seq_durations)
+                compressed__phenotype_seq_state_duration_variance = statistics.variance(compressed__phenotype_seq_durations)
+
                 # Write line of content!
                 # "treatment,run_id,max_update,total_muts,total_substitutions,total_insertions,total_deletions,"
                 #  phen_seq_by_geno_unique_state_cnt, phen_seq_by_geno_length, phen_seq_by_geno_volatility, phen_seq_by_geno_chg_rate
@@ -176,9 +172,9 @@ def main():
                 phen_seq_by_phen_duration = "\"{}\"".format(",".join(map(str, compressed__phenotype_seq_durations)))
                 
                 lineage_seq_content += ",".join(map(str, [treatment, run, pull_id, max_update, total_muts, sub_mut_cnt, ins_mut_cnt, dels_mut_cnt, 
-                                                        phenotype_seq_unique_state_cnt,phenotype_seq_length,phenotype_seq_volatility,phenotype_seq_chg_rate,
+                                                        phenotype_seq_unique_state_cnt,phenotype_seq_length,phenotype_seq_volatility,phenotype_seq_avg_state_duration,phenotype_seq_state_duration_variance,
                                                         phen_seq_by_geno_state, phen_seq_by_geno_start, phen_seq_by_geno_duration, 
-                                                        compressed__phenotype_seq_unique_state_cnt,compressed__phenotype_seq_length,compressed__phenotype_seq_volatility,compressed__phenotype_seq_chg_rate,
+                                                        compressed__phenotype_seq_unique_state_cnt,compressed__phenotype_seq_length,compressed__phenotype_seq_volatility,compressed__phenotype_seq_avg_state_duration,compressed__phenotype_seq_state_duration_variance,
                                                         phen_seq_by_phen_state, phen_seq_by_phen_start, phen_seq_by_phen_duration])) + "\n"
 
     # Write out sequences to file
