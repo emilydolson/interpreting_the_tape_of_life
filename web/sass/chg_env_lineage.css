@@ -1,0 +1,27 @@
+.vis-canvas .ENV-STATE__ENV-NAND {
+  fill: #93e7b6; }
+.vis-canvas .ENV-STATE__ENV-NOT {
+  fill: #a0cfee; }
+.vis-canvas .PHEN-STATE__NONE {
+  fill: #34495e; }
+.vis-canvas .PHEN-STATE__NAND {
+  fill: #2ecc71; }
+.vis-canvas .PHEN-STATE__NOT {
+  fill: #3498db; }
+.vis-canvas .PHEN-STATE__NOT-NAND {
+  fill: #9b59b6; }
+
+.legend-card .ENV-STATE__ENV-NAND {
+  background-color: #93e7b6; }
+.legend-card .ENV-STATE__ENV-NOT {
+  background-color: #a0cfee; }
+.legend-card .PHEN-STATE__NONE {
+  background-color: #34495e; }
+.legend-card .PHEN-STATE__NAND {
+  background-color: #2ecc71; }
+.legend-card .PHEN-STATE__NOT {
+  background-color: #3498db; }
+.legend-card .PHEN-STATE__NOT-NAND {
+  background-color: #9b59b6; }
+
+/*# sourceMappingURL=chg_env_lineage.css.map */
