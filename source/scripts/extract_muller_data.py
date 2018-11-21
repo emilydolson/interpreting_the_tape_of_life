@@ -11,8 +11,10 @@ class Node():
         self.phenotype = phen
 
 def lookup_phenotype(row, genotype_bank):
-    return row["sequence"]
-    # return genotype_bank.loc[row["sequence"], "task_profile"]
+    if row["sequence"] in genotype_bank.index:
+        return genotype_bank.loc[row["sequence"], "task_profile"]
+    else:
+        return ""
 
 def main():
     parser = argparse.ArgumentParser(description="Standards phylogeny file to ggmuller input files converter.")
@@ -82,9 +84,11 @@ def main():
             pop_file = pop_file.append({"Identity":row["id"], "Population":row["num_orgs"], "Time":time}, ignore_index=True)
     
     adj_file, new_id_map = compress_phylogeny(root, nodes)
-    print(pop_file)
     pop_file["Identity2"] = pop_file["Identity"].map(new_id_map)
-    print(pop_file)
+
+    pop_file.to_csv(pop_file_name)
+    adj_file.to_csv(adj_file_name)
+
     # adj_file.drop_duplicates(inplace=True)
     # print(adj_file)
 
