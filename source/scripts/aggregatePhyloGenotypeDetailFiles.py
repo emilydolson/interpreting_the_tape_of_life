@@ -61,7 +61,7 @@ def main():
         detail_path = os.path.join(data_directory, detail_file)
         details = ParseDetailFile(detail_path)
         treatment = detail_file.split("__")[-1].split("-")[0]
-        run_id = detail_file.split("__")[-1].split("-")[-1]
+        run_id = detail_file.split("__")[-1].split("-")[-1].split(".")[0]
         for i in range(0, len(details)):
             gestation_time = details[i]["gestation time"]
             sequence = details[i]["genome sequence"]
