@@ -43,8 +43,9 @@ def main():
     # adj_file = adj_file.astype(dtype={"Identity":"object","Parent":"object"})
     pop_file = pd.DataFrame({"Identity":[], "Population":[], "Time":[]})
 
-    genotype_bank = pd.read_csv(args.genotype_bank, index_col="sequence")
+    genotype_bank = pd.read_csv(args.genotype_bank, index_col="sequence", na_filter=False)
     genotype_bank = genotype_bank[(genotype_bank["treatment"] == args.treatment) & (genotype_bank["run_id"] == int(args.run_id)) ]
+    genotype_bank = genotype_bank[~genotype_bank.index.duplicated(keep="first")]
 
     nodes = {}
     root = ""
@@ -75,7 +76,8 @@ def main():
             if parent == -1:
                 root = row["id"]
             elif parent in nodes:
-                nodes[parent].children.append(row["id"])
+                if row["id"] not in nodes[parent].children:
+                    nodes[parent].children.append(row["id"])
             else:
                 nodes[parent] = Node(parent)
                 nodes[parent].children.append(row["id"]) 
@@ -84,10 +86,10 @@ def main():
             pop_file = pop_file.append({"Identity":row["id"], "Population":row["num_orgs"], "Time":time}, ignore_index=True)
     
     adj_file, new_id_map = compress_phylogeny(root, nodes)
-    pop_file["Identity2"] = pop_file["Identity"].map(new_id_map)
+    pop_file["Identity"] = pop_file["Identity"].map(new_id_map)
 
-    pop_file.to_csv(pop_file_name)
-    adj_file.to_csv(adj_file_name)
+    pop_file.to_csv(pop_file_name, index=False)
+    adj_file.to_csv(adj_file_name, index=False)
 
     # adj_file.drop_duplicates(inplace=True)
     # print(adj_file)
@@ -108,7 +110,7 @@ def compress_phylogeny(root, nodes):
             if nodes[n].phenotype == nodes[nodes[n].parent].phenotype:
                 nodes[n].new_id = nodes[nodes[n].parent].new_id
             else:
-                print(nodes[n].phenotype, nodes[nodes[n].parent].phenotype)
+                # print(nodes[n].phenotype, nodes[nodes[n].parent].phenotype)
                 nodes[n].new_id = next_id
                 adj_file = adj_file.append({"Identity":next_id, "Parent":nodes[nodes[n].parent].new_id}, ignore_index=True)
                 next_id += 1
