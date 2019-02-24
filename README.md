@@ -19,7 +19,7 @@ Note, this paper is an extension of the paper "Quantifying the tape of life: Anc
 - [Study Systems](#study-systems)
   - [Niching Competition Benchmark Problems](#niching-competition-benchmark-problems)
   - [Avida Digital Evolution Platform](#avida-digital-evolution-platform)
-- [Analyses/Visualizations](#analysesvisualizations)
+- [Metric/Visualization Implementations](#metricvisualization-implementations)
 - [References](#references)
 
 <!-- /TOC -->
@@ -68,22 +68,7 @@ refer to the paper.
 
 ### Repository Contents
 
-- **paper.tex**: LaTeX code for paper
-- **LICENSE**: The MIT license, under which all of our code is available (note: this repository also contains code from the 
-    [CEC benchmark functions repository](https://github.com/mikeagn/CEC2013), which is under the FreeBSD license)
-- **paper**: Directory containing bibliography and style files for paper.tex (note that paper.tex has to be at the top level 
-   of this repo to appease overleaf)
-- **figs**: Directory containing all figures used in the paper.
-- **source**: Directory containing all code that was used to run the experiment.
-  - *Makefile*: Contains rules to build the experiment executable.
-  - *OptimizationProblemExp.h*: This is where most of the code specific to this experiment lives.
-  - *optimization-config.h*: Defines configuration settings for these experiments.
-  - *optimization_problems.cc*: Contains all code specific to running this experiment on the command line
-     (as opposed to in a web browser)
-  - *scripts*: Contains scripts used for wrangling jobs on our High-Performance Computing Cluster.
-  - *CEC2013*: Contains the C++ implementation of the CEC benchmark functions. From [here](https://github.com/mikeagn/CEC2013).
-- **config**: Directory contained information about how our experiments were configured.
-- **analysis**:  Directory containing all code used to analyze the data
+- **analysis/**:  Directory containing all code used to analyze the data
   - *cec_python_library*: Contains code that depends on the CEC benchmark function Python implementation:
     - cec2013: the Python implementation of the CEC benchmark functions. From [here](https://github.com/mikeagn/CEC2013).
     - data: Precalculated data that the code in cec2013 relies on. From [here](https://github.com/mikeagn/CEC2013).
@@ -91,6 +76,25 @@ refer to the paper.
     - analyze_landscapes.py: A python script to the generate the heat maps and upper and lower bounds data used by the
       webvr visualization.
     - extract_dominant_lineage_info.py: A script to extract data about the dominant lineage from each condition (phenotypic volatility and the full path) post hoc.
+- **config/**: Directory contained information about how our experiments were configured.
+  - **avida-configs/**: Configurations used for Avida experiments.
+  - **optimization-prob-configs/**: Configurations files used in optimization problem experiments.
+- **figs/**: Directory containing all figures used in the paper.
+- **paper/**: Directory containing bibliography and style files for paper.tex (note that paper.tex has to be at the top level 
+   of this repo to appease overleaf)
+- **source/**: Directory containing all code that was used to run the experiment.
+  - *Makefile*: Contains rules to build the experiment executable.
+  - *OptimizationProblemExp.h*: This is where most of the code specific to this experiment lives.
+  - *optimization-config.h*: Defines configuration settings for these experiments.
+  - *optimization_problems.cc*: Contains all code specific to running this experiment on the command line
+     (as opposed to in a web browser)
+  - *scripts*: Contains scripts used for wrangling jobs on our High-Performance Computing Cluster.
+  - *CEC2013*: Contains the C++ implementation of the CEC benchmark functions. From [here](https://github.com/mikeagn/CEC2013).
+- **web/**: Directory containing web implementation (js and html) of our state-sequence visualization, which can be viewed interactively
+  [here](http://lalejini.com/interpreting_the_tape_of_life/web/chg_env_lineage.html).
+- **paper.tex**: LaTeX code for paper
+- **LICENSE**: The MIT license, under which all of our code is available (note: this repository also contains code from the 
+    [CEC benchmark functions repository](https://github.com/mikeagn/CEC2013), which is under the FreeBSD license)
 
 ## Dependencies
 
@@ -144,10 +148,17 @@ We applied our metrics/visualizations to four different environments in Avida:
 
 For more details about each environment, refer to our paper.
 
-## Analyses/Visualizations
+## Metric/Visualization Implementations
 
-http://lalejini.com/interpreting_the_tape_of_life/web/chg_env_lineage.html
-
+- **Lineage/phylogeny metrics:** Our implementations for (most of) the non-trivial lineage and phylogeny metrics are in the 
+  [Empirical library](https://github.com/devosoft/Empirical).
+- Visualizations
+  - **State sequences**: An interactive web app to view the evolved lineages from the changing environment in Avida can be found
+    [here](http://lalejini.com/interpreting_the_tape_of_life/web/chg_env_lineage.html). The implementation can be found in the web directory of this repository.
+  - **Fitness landscape overlays**: An interactive web app for Emily's fitness landscape overlays can be found [here](https://emilydolson.github.io/fitness_landscape_visualizations/). The implementation can be found [here](https://github.com/emilydolson/fitness_landscape_visualizations).
+  - **Phylogenetic trees**: While we didn't show off any phylogenetic tree visualizations in the paper, [here's a link](https://emilydolson.github.io/lineage_viz_tool/standards_viz.html) to a web visualization tool written by Emily for displaying phylogenies.
+  - **Muller plots**: In this work, we used the [ggmuller R package](https://cran.r-project.org/web/packages/ggmuller/vignettes/ggmuller.html)
+    to generate Muller plots.
 
 ## References
 
