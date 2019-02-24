@@ -7,6 +7,8 @@ Ancestry-based Analyses Provide Insights and Intuition about Evolutionary Dynami
 
 Note, this paper is an extension of the paper "Quantifying the tape of life: Ancestry-based metrics provide insights and intuition about evolutionary dynamics" published in the proceedings of [ALIFE 2018](http://2018.alife.org/).
 
+![Cartoon Illustration of lineage metrics](figs/lineage_metrics_cartoon.png)
+
 **Navigation:**
 
 <!-- TOC -->
@@ -112,7 +114,7 @@ refer to the paper.
 To gain a broad understanding of our metrics, we applied them to four two-dimensional, real-valued
 benchmark optimization problems from the GECCO Competition on Niching Methods: 
 
-![alt-text](./figs/landscapes.png)
+![niching competition fitness landscapes](./figs/landscapes.png)
 
 - (A) Himmelblau
 - (B) Six-Humped Camel Back 
@@ -150,15 +152,21 @@ For more details about each environment, refer to our paper.
 
 ## Metric/Visualization Implementations
 
+![Phylogeny schematic](figs/Phylogenyschematic.png)
+
+
 - **Lineage/phylogeny metrics:** Our implementations for (most of) the non-trivial lineage and phylogeny metrics are in the 
   [Empirical library](https://github.com/devosoft/Empirical).
 - Visualizations
   - **State sequences**: An interactive web app to view the evolved lineages from the changing environment in Avida can be found
     [here](http://lalejini.com/interpreting_the_tape_of_life/web/chg_env_lineage.html). The implementation can be found in the web directory of this repository.
-  - **Fitness landscape overlays**: An interactive web app for Emily's fitness landscape overlays can be found [here](https://emilydolson.github.io/fitness_landscape_visualizations/). The implementation can be found [here](https://github.com/emilydolson/fitness_landscape_visualizations).
-  - **Phylogenetic trees**: While we didn't show off any phylogenetic tree visualizations in the paper, [here's a link](https://emilydolson.github.io/lineage_viz_tool/standards_viz.html) to a web visualization tool written by Emily for displaying phylogenies.
-  - **Muller plots**: In this work, we used the [ggmuller R package](https://cran.r-project.org/web/packages/ggmuller/vignettes/ggmuller.html)
+  - **Fitness landscape overlays**: An interactive web app for our fitness landscape overlays can be found [here](https://emilydolson.github.io/fitness_landscape_visualizations/). The implementation can be found [here](https://github.com/emilydolson/fitness_landscape_visualizations).
+  - **Phylogenetic trees**: While we didn't show off any phylogenetic tree visualizations in the paper, [here's a link](https://emilydolson.github.io/lineage_viz_tool/standards_viz.html) to a web visualization tool written by us for displaying phylogenies.
+  - **Muller plots**: In this work, we used the [ggmuller R package](https://github.com/robjohnnoble/ggmuller)
     to generate Muller plots.
+
+
+
 
 ## References
 
