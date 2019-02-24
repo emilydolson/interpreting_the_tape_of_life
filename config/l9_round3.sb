@@ -1,0 +1,15 @@
+#!/bin/bash -login
+ 
+## resource requests for task:
+#SBATCH -J l93                  # Job Name
+#SBATCH --time=168:00:00                 # Walltime
+#SBATCH -c 1 --mem=20gb          # Requested resource
+#SBATCH --mail-user=dolsonem@msu.edu
+#SBATCH --array=1-30
+
+cd /mnt/scratch/dolsonem/quantifying_tape/data_round3/l9
+mkdir ${SLURM_ARRAY_TASK_ID}
+cd  ${SLURM_ARRAY_TASK_ID}
+cp ../../../config/* .
+
+./avida -s 1${SLURM_ARRAY_TASK_ID} -set WORLD_X 100 -set WORLD_Y 5 -set BIRTH_METHOD 4 -set FILTER_TIME 1000 -set OEE_RES 1000 -set SYSTEMATICS_RES 1000 -set PHYLOGENY_SNAPSHOT_RES 10000 -set ENVIRONMENT_FILE env-logic9.cfg -set EVENT_FILE events-complexity-barriers-update.cfg 2>&1 | cat >> run.log

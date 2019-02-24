@@ -1,6 +1,9 @@
 ---
 title: "Lineage Metrics Analysis"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -86,5 +89,19 @@ eco_ea_vars_of_interest <- melted_eco_ea_data %>%  filter(variable %in% c("mrca_
 
 ggplot(eco_ea_vars_of_interest, aes(x=mutation_rate, y=value, fill=problem, color=problem, group=problem)) + stat_summary(fun.y = median, fun.ymin = function(x){quantile(x)[2]}, fun.ymax=function(x){quantile(x)[4]}) +stat_summary(geom="smooth", fun.data="mean_cl_boot")+ theme_classic() + scale_x_log10("Mutation rate") + scale_y_log10("", labels=scientific, breaks = scales::trans_breaks("log10", function(x) 10^x)) + facet_wrap(~variable, scales="free_y", labeller = labeller(variable=labels),ncol=2) + scale_color_discrete("Problem") + theme(legend.position = "bottom", legend.title = element_text(size=10), legend.text = element_text(size=6), strip.text = element_text(size=6), axis.text = element_text(size=6)) + guides(color=guide_legend(ncol=2), fill="none")
 ggsave("../figs/eco_mutation_rate.png", width=3.5, height=4.5)
+
+```
+
+# Avida
+
+```{r}
+library(readr)
+all_data <- read_csv("repos/interpreting_the_tape_of_life/data/all_data.csv")
+endpoints <- filter(all_data, update==200000)
+melted_endpoints <- melt(endpoints, id.vars=c("update", "environment", "rep"))
+melted_endpoints$value <- as.numeric(as.character(melted_endpoints$value))
+melted_endpoints$environment <- as.factor(melted_endpoints$environment)
+endpoints_of_interest <- melted_endpoints %>% filter (variable %in% c("mrca_depth", "dominant_deleterious_steps", "current_phylogenetic_diversity", "mean_pairwise_distance", "diversity", "generation", "ave_depth", "variance_pairwise_distance", "mean_evolutionary_distinctiveness","mean_deleterious_steps", "variance_deleterious_steps", "mean_taxon_volatility", "mean_unique_taxa", "dominant_unique_phenotypes", "dominant_lineage_length", "dominant_deleterious_steps", "dominant_phenotypic_volatility", "gestation", "num_taxa"))
+ggplot(endpoints_of_interest, aes(x=environment, y=value, fill=environment, group=environment)) + geom_boxplot() + facet_wrap(~variable, scales="free_y")
 
 ```

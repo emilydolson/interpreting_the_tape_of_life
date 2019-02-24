@@ -1,0 +1,10 @@
+#!/bin/bash -login
+ 
+## resource requests for task:
+#SBATCH -J phylo-summary                  # Job Name
+#SBATCH --time=10:00:00                 # Walltime
+#SBATCH -c 1 --mem=4096mb          # Requested resource
+#SBATCH --mail-user=dolsonem@msu.edu
+
+cd /mnt/scratch/dolsonem/quantifying_tape
+bash format_phylogenies.sh high_res_data/change/31/data/
