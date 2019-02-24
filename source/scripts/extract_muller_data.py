@@ -46,7 +46,6 @@ def main():
     genotype_bank = pd.read_csv(args.genotype_bank, index_col="sequence", na_filter=False)
     genotype_bank = genotype_bank[(genotype_bank["treatment"] == args.treatment) & (genotype_bank["run_id"] == int(args.run_id)) ]
     genotype_bank = genotype_bank[~genotype_bank.index.duplicated(keep="first")]
-    
 
     nodes = {}
     root = ""
@@ -128,7 +127,7 @@ def compress_phylogeny(root, nodes):
             if nodes[n].phenotype == nodes[nodes[n].parent].phenotype:
                 nodes[n].new_id = nodes[nodes[n].parent].new_id
             else:
-                print(nodes[n].phenotype, nodes[nodes[n].parent].phenotype)
+                # print(nodes[n].phenotype, nodes[nodes[n].parent].phenotype)
                 nodes[n].new_id = next_id
                 adj_file = adj_file.append({"Identity":next_id, "Parent":nodes[nodes[n].parent].new_id}, ignore_index=True)
                 next_id += 1

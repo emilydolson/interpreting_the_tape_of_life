@@ -1,21 +1,21 @@
 
 var vis_configs = {
-  data_file_path: "data/lineage_sequences.csv",
+  data_file_path: "data/chg_env_lineage_sequences.csv",
 
   focal_treatment: "change",
   div_id: "chg_env_lineage_vis",
 
   margin: {top: 20, right: 40, bottom: 20, left: 100},
-  tick_height: 0.1,
+  tick_height: 0.075,
   max_seq_width: 20,
   max_seq_hspacer: 3,
-  slice_vspacer: 50,
+  slice_vspacer: 20,
   
   env_seq_width: 10,
   env_seq_hspacer: 5,
   
   full_range: {min: null, max: null},
-  slice_ranges: [{min: 0, max: 500}, {min: 50000, max: 55000}, {min: 95000, max: 100000}],
+  slice_ranges: [{min: 0, max: 500}, {min: 97500, max: 102500}, {min: 195000, max: 200000}],
   
   time_tick_interval: 500,
 
@@ -244,6 +244,7 @@ var BuildVisualization = function(data) {
       d3.select(this).append("g").attr("class", "axis y-axis")
                                  .attr("id", "seq-vis_y-axis_r"+slice_id)
                                  .attr("transform", function(d) { return "translate(" + -1*(vis_configs.env_seq_width+vis_configs.env_seq_hspacer) +  ",0)"; } )
+                                 .style("font-size", "75%")
                                  .call(y_axis);
                                  
       
