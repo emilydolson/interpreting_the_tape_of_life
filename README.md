@@ -5,6 +5,8 @@ for the paper "Interpreting the Tape of Life:
 Ancestry-based Analyses Provide Insights and Intuition about Evolutionary Dynamics"
 (to appear in the Artificial Life Journal).
 
+Note, this paper is an extension of the paper "Quantifying the tape of life: Ancestry-based metrics provide insights and intuition about evolutionary dynamics" published in the proceedings of [ALIFE 2018](http://2018.alife.org/).
+
 **Navigation:**
 
 <!-- TOC -->
@@ -13,10 +15,11 @@ Ancestry-based Analyses Provide Insights and Intuition about Evolutionary Dynami
   - [Authors](#authors)
   - [Abstract](#abstract)
   - [Repository Contents](#repository-contents)
+- [Dependencies](#dependencies)
 - [Study Systems](#study-systems)
   - [Niching Competition Benchmark Problems](#niching-competition-benchmark-problems)
   - [Avida Digital Evolution Platform](#avida-digital-evolution-platform)
-- [Analyses](#analyses)
+- [Analyses/Visualizations](#analysesvisualizations)
 - [References](#references)
 
 <!-- /TOC -->
@@ -65,6 +68,39 @@ refer to the paper.
 
 ### Repository Contents
 
+- **paper.tex**: LaTeX code for paper
+- **LICENSE**: The MIT license, under which all of our code is available (note: this repository also contains code from the 
+    [CEC benchmark functions repository](https://github.com/mikeagn/CEC2013), which is under the FreeBSD license)
+- **paper**: Directory containing bibliography and style files for paper.tex (note that paper.tex has to be at the top level 
+   of this repo to appease overleaf)
+- **figs**: Directory containing all figures used in the paper.
+- **source**: Directory containing all code that was used to run the experiment.
+  - *Makefile*: Contains rules to build the experiment executable.
+  - *OptimizationProblemExp.h*: This is where most of the code specific to this experiment lives.
+  - *optimization-config.h*: Defines configuration settings for these experiments.
+  - *optimization_problems.cc*: Contains all code specific to running this experiment on the command line
+     (as opposed to in a web browser)
+  - *scripts*: Contains scripts used for wrangling jobs on our High-Performance Computing Cluster.
+  - *CEC2013*: Contains the C++ implementation of the CEC benchmark functions. From [here](https://github.com/mikeagn/CEC2013).
+- **config**: Directory contained information about how our experiments were configured.
+- **analysis**:  Directory containing all code used to analyze the data
+  - *cec_python_library*: Contains code that depends on the CEC benchmark function Python implementation:
+    - cec2013: the Python implementation of the CEC benchmark functions. From [here](https://github.com/mikeagn/CEC2013).
+    - data: Precalculated data that the code in cec2013 relies on. From [here](https://github.com/mikeagn/CEC2013).
+    - LICENSE.txt: License for the CEC benchmark function implementations.
+    - analyze_landscapes.py: A python script to the generate the heat maps and upper and lower bounds data used by the
+      webvr visualization.
+    - extract_dominant_lineage_info.py: A script to extract data about the dominant lineage from each condition (phenotypic volatility and the full path) post hoc.
+
+## Dependencies
+
+- All of our experiment implementations depend on [Empirical](https://github.com/devosoft/Empirical),
+  a library of tools for scientific software development written in C++.
+- [The CEC Niching Competition Benchmark Function Library](https://github.com/mikeagn/CEC2013/),
+  but we have included the necessary code in this repository for convenience.
+- A [modified version of Avida](https://github.com/emilydolson/avida-empirical) that supports the necessary data tracking required
+  for our analyses.
+
 ## Study Systems
 
 ### Niching Competition Benchmark Problems
@@ -108,7 +144,7 @@ We applied our metrics/visualizations to four different environments in Avida:
 
 For more details about each environment, refer to our paper.
 
-## Analyses
+## Analyses/Visualizations
 
 http://lalejini.com/interpreting_the_tape_of_life/web/chg_env_lineage.html
 
