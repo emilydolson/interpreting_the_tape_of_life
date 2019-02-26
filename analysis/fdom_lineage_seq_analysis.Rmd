@@ -29,12 +29,14 @@ seq_data <- read_csv("../data/lineage_sequences.csv",
                                           phen_seq_by_geno_unique_state_cnt=col_integer(),
                                           phen_seq_by_geno_length=col_integer(),
                                           phen_seq_by_geno_volatility=col_integer(),
-                                          phen_seq_by_geno_chg_rate=col_double(),
+                                          phen_seq_by_geno_avg_state_duration=col_double(),
+                                          phen_seq_by_geno_state_duration_variance=col_double(),
                                           phen_seq_by_phen_unique_state_cnt=col_integer(),
                                           phen_seq_by_phen_length=col_integer(),
                                           phen_seq_by_phen_volatility=col_integer(),
-                                          phen_seq_by_phen_chg_rate=col_double())
-                     )
+                                          phen_seq_by_phen_avg_state_duration=col_double(),
+                                          phen_seq_by_pheno_state_duration_variance=col_double())
+)
 
 # Separate generation 10k data and update 200k data
 generation_data <- filter(seq_data, pull_condition == "gen-10000")
@@ -44,7 +46,7 @@ update_data <- filter(seq_data, pull_condition == "update-200000")
 ```{r}
 
 melted_generation_data <- melt(generation_data, id.vars=c("treatment", "run_id", "pull_condition", "max_update"))
-gens_vars_of_interest <- melted_generation_data %>% filter(variable %in% c("total_muts", "total_substitutions", "total_insertions", "total_deletions", "phen_seq_by_geno_unique_state_cnt","phen_seq_by_geno_length","phen_seq_by_geno_volatility","phen_seq_by_geno_chg_rate","phen_seq_by_phen_unique_state_cnt","phen_seq_by_phen_length","phen_seq_by_phen_volatility","phen_seq_by_phen_chg_rate"))
+gens_vars_of_interest <- melted_generation_data %>% filter(variable %in% c("total_muts", "total_substitutions", "total_insertions", "total_deletions", "phen_seq_by_geno_unique_state_cnt","phen_seq_by_geno_length","phen_seq_by_geno_volatility","phen_seq_by_phen_unique_state_cnt","phen_seq_by_phen_length","phen_seq_by_phen_volatility","phen_seq_by_phen_avg_state_duration","phen_seq_by_pheno_state_duration_variance","phen_seq_by_geno_avg_state_duration","phen_seq_by_geno_state_duration_variance"))
 
 
 # Plot by generations

@@ -11,18 +11,18 @@ class Node():
         self.phenotype = phen
 
 def lookup_phenotype(row, genotype_bank):
-    if row["sequence"] in genotype_bank.index:
-        return genotype_bank.loc[row["sequence"], "task_profile"]
-    else:
-        return ""
+    #if row["sequence"] in genotype_bank.index:
+    #    return genotype_bank.loc[row["sequence"], "task_profile"]
+    #else:
+    return ""
 
 def main():
     parser = argparse.ArgumentParser(description="Standards phylogeny file to ggmuller input files converter.")
     parser.add_argument("input", type=str, nargs='+', help="Input files")
     parser.add_argument("-output_prefix", "-out", type=str, help="Prefix to add to output file names")
-    parser.add_argument("-treatment", "-treatment", type=str, required=True, help="What treatment is this run from?")
-    parser.add_argument("-run_id", "-run", type=str, required=True, help="What run is this run from?")
-    parser.add_argument("-genotype_bank", "-genotypes", type=str, required=True, help="File mapping genotypes to phenotypes")
+    #parser.add_argument("-treatment", "-treatment", type=str, required=True, help="What treatment is this run from?")
+    #parser.add_argument("-run_id", "-run", type=str, required=True, help="What run is this run from?")
+    #parser.add_argument("-genotype_bank", "-genotypes", type=str, required=True, help="File mapping genotypes to phenotypes")
     # Parse command line arguments.
     args = parser.parse_args()
 
@@ -43,9 +43,10 @@ def main():
     # adj_file = adj_file.astype(dtype={"Identity":"object","Parent":"object"})
     pop_file = pd.DataFrame({"Identity":[], "Population":[], "Time":[]})
 
-    genotype_bank = pd.read_csv(args.genotype_bank, index_col="sequence", na_filter=False)
-    genotype_bank = genotype_bank[(genotype_bank["treatment"] == args.treatment) & (genotype_bank["run_id"] == int(args.run_id)) ]
-    genotype_bank = genotype_bank[~genotype_bank.index.duplicated(keep="first")]
+    genotype_bank = ""
+    #genotype_bank = pd.read_csv(args.genotype_bank, index_col="sequence", na_filter=False)
+    #genotype_bank = genotype_bank[(genotype_bank["treatment"] == args.treatment) & (genotype_bank["run_id"] == int(args.run_id)) ]
+    #genotype_bank = genotype_bank[~genotype_bank.index.duplicated(keep="first")]
 
     nodes = {}
     root = ""
@@ -87,7 +88,9 @@ def main():
     
     adj_file, new_id_map = compress_phylogeny(root, nodes)
     pop_file["Identity"] = pop_file["Identity"].map(new_id_map)
-
+    pop_file = pop_file.groupby(["Identity", "Time"]).sum()
+    pop_file = pop_file.reset_index()
+    
     pop_file.to_csv(pop_file_name, index=False)
     adj_file.to_csv(adj_file_name, index=False)
 
@@ -107,7 +110,7 @@ def compress_phylogeny(root, nodes):
         new_frontier = []
 
         for n in frontier:
-            if nodes[n].phenotype == nodes[nodes[n].parent].phenotype:
+            if nodes[n].seq == nodes[nodes[n].parent].seq:
                 nodes[n].new_id = nodes[nodes[n].parent].new_id
             else:
                 # print(nodes[n].phenotype, nodes[nodes[n].parent].phenotype)

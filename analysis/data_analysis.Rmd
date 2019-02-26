@@ -24,9 +24,13 @@ First let's read in the data:
 
 ```{r, message=FALSE}
 
+theme_set(theme_classic())
+theme_update(axis.title = element_text(size=18), axis.text = element_text(size=12), legend.text = element_text(size=14), legend.title = element_text(size=14), legend.position = "bottom", strip.text = element_text(size=18))
+
+
 # Pull in two original data files and merge them tog
-alex_real_value_data <- read_csv("alex_real_value_data.csv")
-emily_real_value_data <- read_csv("real_value_data.csv")
+alex_real_value_data <- read_csv("../alex_real_value_data.csv")
+emily_real_value_data <- read_csv("../real_value_data.csv")
 real_value_data <- merge(alex_real_value_data, emily_real_value_data, all = TRUE)
 
 # Convert problem and selection type codes to informative names. Convert things that should be factors to factors
@@ -96,12 +100,88 @@ ggsave("../figs/eco_mutation_rate.png", width=3.5, height=4.5)
 
 ```{r}
 library(readr)
-all_data <- read_csv("repos/interpreting_the_tape_of_life/data/all_data.csv")
+all_data <- read_csv("../data/all_data.csv")
 endpoints <- filter(all_data, update==200000)
 melted_endpoints <- melt(endpoints, id.vars=c("update", "environment", "rep"))
 melted_endpoints$value <- as.numeric(as.character(melted_endpoints$value))
 melted_endpoints$environment <- as.factor(melted_endpoints$environment)
 endpoints_of_interest <- melted_endpoints %>% filter (variable %in% c("mrca_depth", "dominant_deleterious_steps", "current_phylogenetic_diversity", "mean_pairwise_distance", "diversity", "generation", "ave_depth", "variance_pairwise_distance", "mean_evolutionary_distinctiveness","mean_deleterious_steps", "variance_deleterious_steps", "mean_taxon_volatility", "mean_unique_taxa", "dominant_unique_phenotypes", "dominant_lineage_length", "dominant_deleterious_steps", "dominant_phenotypic_volatility", "gestation", "num_taxa"))
 ggplot(endpoints_of_interest, aes(x=environment, y=value, fill=environment, group=environment)) + geom_boxplot() + facet_wrap(~variable, scales="free_y")
+
+```
+
+```{r}
+library(readr)
+gen_endpoints <- all_data %>% group_by(rep, environment) %>% by_slice(~ slice(.,detect_index(.$generation, ~ .x >= 10000)), .collate = "rows")
+melted_endpoints_gen <- melt(gen_endpoints, id.vars=c("generation", "environment", "rep"))
+melted_endpoints_gen$value <- as.numeric(as.character(melted_endpoints_gen$value))
+melted_endpoints_gen$environment <- as.factor(melted_endpoints_gen$environment)
+#endpoints_of_interest_gen <- melted_endpoints_gen %>% filter (variable %in% c("mrca_depth", "dominant_deleterious_steps", "current_phylogenetic_diversity", "mean_pairwise_distance", "diversity", "generation", "ave_depth", "variance_pairwise_distance", "mean_evolutionary_distinctiveness","mean_deleterious_steps", "variance_deleterious_steps", "mean_taxon_volatility", "mean_unique_taxa", "dominant_unique_phenotypes", "dominant_lineage_length", "dominant_deleterious_steps", "dominant_phenotypic_volatility", "gestation", "num_taxa"))
+endpoints_of_interest_gen <- melted_endpoints_gen %>% filter (variable %in% c("mrca_depth", "mean_unqiue_taxa", "mean_pairwise_distance"))
+
+ggplot(endpoints_of_interest_gen, aes(x=environment, y=value, fill=environment, group=environment)) + geom_boxplot() + facet_wrap(~variable, scales="free_y")
+
+```
+```{r}
+# Extract relevant data from CSV
+seq_data <- read_csv("../data/lineage_sequences.csv", 
+                      col_types=cols_only(treatment=col_character(),
+                                          run_id=col_character(),
+                                          pull_condition=col_character(),
+                                          max_update=col_integer(),
+                                          total_muts=col_integer(),
+                                          total_substitutions=col_integer(),
+                                          total_insertions=col_integer(),
+                                          total_deletions=col_integer(),
+                                          phen_seq_by_geno_unique_state_cnt=col_integer(),
+                                          phen_seq_by_geno_length=col_integer(),
+                                          phen_seq_by_geno_volatility=col_integer(),
+                                          phen_seq_by_geno_avg_state_duration=col_double(),
+                                          phen_seq_by_geno_state_duration_variance=col_double(),
+                                          phen_seq_by_phen_unique_state_cnt=col_integer(),
+                                          phen_seq_by_phen_length=col_integer(),
+                                          phen_seq_by_phen_volatility=col_integer(),
+                                          phen_seq_by_phen_avg_state_duration=col_double(),
+                                          phen_seq_by_pheno_state_duration_variance=col_double())
+)
+
+# Separate generation 10k data and update 200k data
+generation_data <- filter(seq_data, pull_condition == "gen-10000")
+update_data <- filter(seq_data, pull_condition == "update-200000")
+
+generation_data <- generation_data %>% mutate(total_substitutions = total_substitutions/total_muts, total_deletions = total_deletions/total_muts, total_insertions = total_insertions/total_muts)
+
+melted_generation_data <- melt(generation_data, id.vars=c("treatment", "run_id", "pull_condition", "max_update"))
+gens_vars_of_interest <- melted_generation_data %>% filter(variable %in% c("phen_seq_by_phen_unique_state_cnt","phen_seq_by_phen_length","phen_seq_by_phen_volatility","phen_seq_by_phen_avg_state_duration"))
+
+gens_vars_of_interest_mut <- melted_generation_data %>% filter(variable %in% c("total_muts", "total_substitutions", "total_insertions", "total_deletions"))
+
+gens_vars_of_interest_mut_labeled <- gens_vars_of_interest %>% transform(variable = case_when(variable == "total_muts" ~ "Count of all mutations", variable=="total_substitutions" ~ "Proportion of substitutions", variable=="total_insertions" ~ "Proportion of insertions", variable == "total_deletions" ~ "Proportion of deletions")) %>% transform(treatment = case_when(treatment == "change" ~ "Changing", treatment == "empty" ~ "Minimal", treatment == "l9" ~ "Logic-9", treatment == "limres" ~ "Limited\nresources"))
+
+# Plot by generations
+ggplot(gens_vars_of_interest_mut_labeled, aes(x=treatment, y=value, fill=treatment, color=treatment, group=treatment)) + facet_wrap(~variable, scales="free") + geom_boxplot(color="black") + scale_y_continuous("") + theme(legend.position = "none") + scale_x_discrete("Treatment")
+ggsave("mutations_avida.png")
+
+```
+
+### Muller plots
+
+```{r}
+library(ggmuller)
+library(readr)
+
+limres21_adjacency <- read_csv("../data/limres21_adjacency.csv")
+limres21_pop_info <- read_csv("../data/limres21_pop_info.csv")
+limres21_adjacency <- limres21_adjacency[c("Parent", "Identity")]
+
+
+limres21_pop_info_trunc <- filter(limres21_pop_info, Time < 8000000)
+
+limres_Muller_df_trunc <- get_Muller_df(limres21_adjacency, limres21_pop_info_trunc, cutoff = .05)
+limres_Muller_df_trunc <- filter(limres_Muller_df_trunc, Time < 8000000)
+fits <- limres_Muller_df_trunc %>% group_by(Identity) %>% summarize(Phenotype = max(Phenotype, na.rm = TRUE))
+correct_df <- left_join(limres_Muller_df_trunc %>% select(-one_of("Fitness"), -one_of("Phenotype")), fits)
+
+Muller_plot(correct_df, colour_by = "Phenotype")
 
 ```
