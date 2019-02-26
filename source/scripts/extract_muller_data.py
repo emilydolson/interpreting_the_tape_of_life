@@ -67,12 +67,15 @@ def main():
             else:
                 parent = int(ancestors[0])
 
+            phen = lookup_phenotype(row, genotype_bank)
+
             if row["id"] in nodes:
                 nodes[row["id"]].parent = parent
                 nodes[row["id"]].sequence = row["sequence"]
-                nodes[row["id"]].phenotype = lookup_phenotype(row, genotype_bank)
+                nodes[row["id"]].phenotype = phen
             else:
-                nodes[row["id"]] = Node(row["id"], parent, row["sequence"], lookup_phenotype(row, genotype_bank))
+                nodes[row["id"]] = Node(row["id"], parent, row["sequence"], phen)
+                #print(nodes[row["id"]].phenotype)
 
             if parent == -1:
                 root = row["id"]
@@ -87,8 +90,15 @@ def main():
             pop_file = pop_file.append({"Identity":row["id"], "Population":row["num_orgs"], "Time":time}, ignore_index=True)
     
     adj_file, new_id_map = compress_phylogeny(root, nodes)
+
+    phenotypes = []
+    for i,row in pop_file.iterrows():
+        phenotypes.append(nodes[row["Identity"]].phenotype)
+    
+    pop_file["Phenotype"] = phenotypes
+
     pop_file["Identity"] = pop_file["Identity"].map(new_id_map)
-    pop_file = pop_file.groupby(["Identity", "Time"]).sum()
+    pop_file = pop_file.groupby(["Identity", "Phenotype", "Time"]).sum()
     pop_file = pop_file.reset_index()
     
     pop_file.to_csv(pop_file_name, index=False)
@@ -107,10 +117,15 @@ def compress_phylogeny(root, nodes):
     adj_file = pd.DataFrame({"Identity":[], "Parent":[]})
     
     while frontier:
+        #print("fontier:", frontier)
         new_frontier = []
 
         for n in frontier:
-            if nodes[n].seq == nodes[nodes[n].parent].seq:
+            if nodes[n].phenotype == "":
+                #print(nodes[nodes[n].parent].phenotype)
+                nodes[n].phenotype = nodes[nodes[n].parent].phenotype
+
+            if nodes[n].phenotype == nodes[nodes[n].parent].phenotype:
                 nodes[n].new_id = nodes[nodes[n].parent].new_id
             else:
                 # print(nodes[n].phenotype, nodes[nodes[n].parent].phenotype)
@@ -120,6 +135,7 @@ def compress_phylogeny(root, nodes):
 
             new_id_map[nodes[n].id] = nodes[n].new_id
             new_frontier.extend(nodes[n].children)
+            #print("children:", nodes[n].children, frontier, len(frontier))
 
         frontier = new_frontier
 
