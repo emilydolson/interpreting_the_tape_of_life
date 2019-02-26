@@ -3,7 +3,7 @@
 \usepackage{natbib,paper/alifeconf}  %% The order is important
 \usepackage{amsmath}
 \usepackage{hyperref}
-
+\usepackage{setspace}
 \newcommand{\reduceCaptionPadding}{\setlength{\belowcaptionskip}{-10pt}}
 
 \renewcommand\floatpagefraction{.9}
@@ -12,7 +12,7 @@
 \renewcommand\dbltopfraction{.9} % for two column documents
 \renewcommand\bottomfraction{.9}
 \renewcommand\textfraction{.1}   
-
+\linespread{2}
 % *****************
 %  Requirements:
 % *****************
@@ -86,13 +86,38 @@ dolsonem@msu.edu} % email of corresponding author
 
 
 \begin{document}
-\maketitle
+
+\section{Authors}
+\begin{spacing}{1}
+
+\begin{itemize}
+\item Emily L. Dolson$^{1,2,3}$, \textbf{Mailing address:} MSU BEACON Center, Biomedical and Physical Sciences Building, 567 Wilson Road Room 1441, East Lansing, MI 48824,  \textbf{E-mail address:} dolsonem@msu.edu,  \textbf{Phone number:} +1 (831) 428-2464
+\item Alexander Lalejini$^{1,2,3}$,  \textbf{Mailing address:} MSU BEACON Center, Biomedical and Physical Sciences Building, 567 Wilson Road Room 1441, East Lansing, MI 48824,  \textbf{E-mail address:} lalejini@msu.edu
+\item Steven Jorgensen$^{1,2}$,  \textbf{Mailing address:} MSU BEACON Center, Biomedical and Physical Sciences Building, 567 Wilson Road Room 1441, East Lansing, MI 48824,  \textbf{E-mail address:} jorgen72@msu.edu 
+\item Charles Ofria$^{1,2,3}$,  \textbf{Mailing address:} MSU BEACON Center, Biomedical and Physical Sciences Building, 567 Wilson Road Room 1441, East Lansing, MI 48824,  \textbf{E-mail address:} ofria@msu.edu,  \textbf{Phone number:} +1 (517) 355-8389
+\end{itemize}
+$^1$BEACON Center for the Study of Evolution in Action  \\
+$^2$Department of Computer Science and Engineering, Michigan State University, MI, 48823 \\
+$^3$Program in Ecology, Evolutionary Biology, and Behavior, Michigan State University, MI, 48823 \\
+\\
+\textbf{Corresponding Author:} Emily Dolson
+\\
+\textbf{Keywords:} phylogeny, lineage, metrics, evolutionary dynamics, phylogenetic metrics, data visualization, digital evolution
+
+\end{spacing}
+
 
 \begin{abstract}
 Fine-scale evolutionary dynamics can be challenging to tease out when focused on the broad brush strokes of whole populations over long time spans. We propose a suite of diagnostic analysis techniques that operate on lineages and phylogenies in digital evolution experiments with the aim of improving our capacity to quantitatively explore the nuances of evolutionary histories in digital evolution experiments. We present three types of lineage measurements: lineage length, mutation accumulation, and phenotypic volatility. Additionally, we suggest the adoption of four phylogeny measurements from biology: phylogenetic richness, phylogenetic divergence, phylogenetic regularity, and depth of the most-recent common ancestor. 
 In addition to quantitative metrics, we also discuss several existing data visualizations that are useful for understanding lineages and phylogenies: state sequence visualizations, fitness landscape overlays, phylogenetic trees, and Muller plots.
 We examine the behavior of these metrics (with the aid of data visualizations) in two well-studied computational contexts: (1) a set of two-dimensional, real-valued optimization problems under a range of mutation rates and selection strengths, and (2) a set of qualitatively different environments in the Avida Digital Evolution Platform.  These results confirm our intuition about how these metrics respond to various evolutionary conditions and indicate their broad value.
 \end{abstract}
+
+\newpage
+
+\maketitle
+
+\vspace{.5in}
 
 \section{Introduction}
 
@@ -116,7 +141,7 @@ In addition to demonstrating a range of analysis tools that are useful to digita
 
 \section{Metrics}
 
-Code for all of our metrics is open source and available in the Empirical library (\url{https://github.com/devosoft/Empirical}). Empirical is a C++ library built to facilitate writing efficient and easily sharable scientific software. Empirical is a header-only library, so adding these metrics to an existing project has minimal overhead.
+Code for all of our metrics is open source and available in the Empirical library \citep{charles_ofria_2019_2575607}. Empirical is a C++ library built to facilitate writing efficient and easily sharable scientific software. Empirical is a header-only library, so adding these metrics to an existing project has minimal overhead. Stand-alone versions of these metrics that can be applied to any previously-generated data are being developed as part of the Artificial Life Data Standards initiative \citep{standards_github_repo}.
 % [QUESTION] @AML: Is it actually true that someone could include these metrics with minimal effort? How much of Empirical would it impose on the user? Just the systematics manager? 
 %@ELD: They should just need the systematics manager. And they might need to hook up a couple of data collection signals.
 
@@ -136,7 +161,7 @@ Only asexual lineages %consisting of asexually reproducing ancestors
 where genetic material is exclusively vertically transmitted can be directly abstracted as a \textit{linear sequence} of states.
 Sexual reproduction (and any form of horizontal gene transfer) complicates matters significantly as such lineages are more appropriately represented by trees rooted at the extant organism, branching for each contributor of genetic material. For the metrics we present here, we limit our discussion to asexual populations; however, we suggest three approaches for generalizing these lineage metrics to sexual populations: 
 \begin{enumerate}
-\item \textbf{Build lineages based on sites in a genome}. For genetic representations composed of multiple constituent parts that are inherited atomically (\textit{i.e.} sites in a genome), the complication of sexual lineages can be avoided by tracking the lineages of these parts. Genomic sites will only ever have a single parent, so their lineages are effectively asexual. An organism could then be viewed as a collection of lineages rather than a single one.
+\item \textbf{Build lineages based on sites in a genome}. For genetic representations composed of multiple constituent parts that are inherited atomically (\textit{i.e.}, sites in a genome), the complication of sexual lineages can be avoided by tracking the lineages of these parts. Genomic sites will only ever have a single parent, so their lineages are effectively asexual. An organism could then be viewed as a collection of lineages rather than a single one.
 \item \textbf{Apply a lossy compression to reduce sexual lineages into linear sequences}. By modeling sexual reproduction events as asexual reproduction events, it is possible to compress sexual lineages into linear sequences of states. One parent is designated to be a part of the lineage and the genetic contributions of other parents are considered to be sources of genetic variation (mutations). The primary downside to this approach is its lossy-ness (\textit{i.e.}, the fact that it discards potentially important parentage information).  
 \item \textbf{Extend our application of the metrics to operate over non-linear (tree) structured lineages}. Alternatively, we can extend our metrics to operate over the more complex state sequences that constitute the lineages of sexually reproducing organisms. One such approach would be to consider all possible ancestor paths for an extant individual, calculate a given metric for each of them and then average the resulting values together.
 \end{enumerate}
@@ -153,7 +178,7 @@ Mutation accumulation defines a set of measurements that track mutational change
 
 In conjunction with collected fitness information, the class of a mutation (\textit{e.g.}, beneficial, deleterious, or neutral) can also be tracked. Different evolutionary conditions are expected to cause different distributions of mutations along a lineage~\citep{barrick2013genome}; deviations revealed by measures of mutation accumulation can act as a barometer for unexpected evolutionary dynamics.  
 % @AML: the below points likely have many things that could be cited to support. 
-The number and magnitude of deleterious mutations along a lineage can tell us both about the ruggedness of the fitness landscape, and about a lineage's ability to cross fitness valleys~\citep{covert_experiments_2013}. 
+The number and magnitude of deleterious mutations along a lineage can tell us both about the ruggedness of the fitness landscape and about a lineage's ability to cross fitness valleys~\citep{covert_experiments_2013}. 
 Similarly, an elevated measure of neutral mutations relative to beneficial or deleterious mutations can suggest that the fitness landscape has neutral space that the lineage is spending most of its time drifting around. 
 %@CAO There are various other things it could tell us, such as additional co-evolutionary pressures that are not reflected in the raw calculation of fitness.  Interestingly, using these metrics in combinaton with local fitness landscape analyses would do the trick.  But that's for another paper.  Indeed, I think it would be nice to put out a series of papers of useful analysis techniques and then do a master paper that reviews them all and demonstrates them in the context of an Avida-like system AND a very different digital evolution system (Markov Brains?)
 
@@ -199,7 +224,7 @@ In populations without ecological forces promoting coexistence, phylogenies shou
 
 An important distinction between phylogenies in natural versus computational systems is that natural phylogenies are generally inferred from extant taxa, whereas computational phylogenies are directly recorded. Inferred phylogenies do not contain internal nodes except at branch points. They also do not contain history prior to the most recent common ancestor (MRCA) of all extant organisms. For consistency, we exclude pre-MRCA taxa from our analyses. Here, we will not remove non-branching internal nodes, as these only serve to make our phylogenies more informative. 
 
-In some cases, however, it may be advantageous to remove non-branching internal nodes. Doing so produces a more abstract summary of the phylogenetic process. Such summaries are useful in cases where trees are produced under different conditions (\textit{e.g.} different numbers of generations) are being compared.
+In some cases, however, it may be advantageous to remove non-branching internal nodes. Doing so produces a more abstract summary of the phylogenetic process. Such summaries are useful in cases where trees are produced under different conditions (\textit{e.g.}, different numbers of generations) are being compared.
 
 Here we provide a high-level summary of phylogeny metrics that we expect will be particularly useful.
 Figure \ref{fig:toy-phylo} gives two example phylogenies on which we demonstrate several of the metrics discussed in this section.
@@ -207,11 +232,13 @@ For more metrics and more detail on all of these metrics, see~\citep{winter_phyl
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs/toy-phylogeny.png}
+    \includegraphics[width=\linewidth]{figs/toy-phylogeny.pdf}
     \caption{\small Both (A) and (B) show pruned phylogenetic trees on which we demonstrate several phylogentic metrics. 
     Nodes in each tree represent taxa, and edges between nodes represent ancestor-descendant relationships.
     %For a more complete explanation of interpreting phylogenetic trees, see Section \ref{sec:phylogenetictrees}. (@AML: Section references not working because of the formatting)
-    In each tree, extant taxa (leaf nodes) are shaded red, the original ancestor (the root node) is shaded yellow, and the MRCA is outlined in blue. In (A), phylogenetic richness (calculated as phylogenetic diversity; ~\citealp{faith_conservation_1992}) equals 4, phylogenetic divergence (calculated as mean pairwise distance among extant taxa) equals 2, and phylogenetic regularity (calculated as the variance of pairwise distances among extant taxa) equals 0. In (B), phylogenetic richness (calculated as phylogenetic diversity (cite)) equals 6, phylogenetic divergence (calculated as mean pairwise distance among extant taxa) equals 3.33, and phylogenetic regularity (calculated as the variance of pairwise distances among extant taxa) equals 1.33.}
+    In each tree, extant taxa (leaf nodes) are shaded red, the original ancestor (the root node) is shaded yellow, and the MRCA is outlined in blue. We are assuming that all branches have a length of 1 (in some contexts, branch lengths may be varied to more precisely reflect evolutionary distance between taxa). In (A), phylogenetic richness (calculated as phylogenetic diversity; ~\citealp{faith_conservation_1992}) equals 4, phylogenetic divergence (calculated as mean pairwise distance among extant taxa) equals 2, and phylogenetic regularity (calculated as the variance of pairwise distances among extant taxa) equals 0. In (B), phylogenetic richness equals 6, phylogenetic divergence equals 3.33, and phylogenetic regularity equals %0.89 % (population variance)
+    1.33.
+    }
     \label{fig:toy-phylo}
 \end{figure}
 
@@ -326,7 +353,7 @@ To gain a broad understanding of our metrics, we applied them to a diverse subse
 
 For each test problem, we evolved populations of 1000 organisms under a range of mutation rates and selection strengths for 5000 generations. Each organism's genome consisted of two floating point numbers that defined its position in the fitness landscape. We initialized populations by randomly generating a number of organisms equal to the population size. To determine which organisms reproduced each generation, we used tournament selection. We evolved populations under five different tournament sizes: one, two, four, eight, and sixteen. Tournament size represents strength of selection where higher tournament sizes correspond to strong selection and lower tournament sizes correspond to weak selection~\citep{blickle1995mathematical}. A tournament size of one is equivalent to no selection pressure (\textit{i.e.}, every organism in the population has an equal chance of being selected to reproduce). Organisms selected to reproduce did so asexually. Values in an offspring's genome were mutated by adding noise given by a normal distribution with a mean of 0; the `mutation rate' of a treatment defined the standard deviation used to define this normal distribution and was given as a proportion of the test problem's domain. We prevented mutations from causing a value to exceed the valid domain of the given problem. For each problem and tournament size, we evolved populations at eight mutation rates: $1\text{e-}08$, $1\text{e-}07$, $1\text{e-}06$, $1\text{e-}05$, $1\text{e-}04$, $1\text{e-}03$, $1\text{e-}02$, and $1\text{e-}01$. 
 
-We also ran a second set of experiments using these benchmark problems to explore the impact of ecological dynamics on our suite of ancestry-based metrics. For these experiments, we generated a stable ecology using the Eco-EA algorithm as a selection technique~\citep{goings_ecology-based_2012}. Eco-EA is a technique for creating niches that promote stable diversification in the context of an evolutionary algorithm. In our test problems, we created niches associated with spatial locations across the fitness landscape. For all experimental conditions, we ran ten replicates, each with a unique random number seed. Our experiment is implemented using the Empirical library; our implementation is included in the supplemental material for this paper \citep{supplement}. 
+We also ran a second set of experiments using these benchmark problems to explore the impact of ecological dynamics on our suite of ancestry-based metrics. For these experiments, we generated a stable ecology using the Eco-EA algorithm as a selection technique~\citep{goings_ecology-based_2012}. Eco-EA is a technique for creating niches that promote stable diversification in the context of an evolutionary algorithm. In our test problems, we created niches associated with spatial locations across the fitness landscape. For all experimental conditions, we ran ten replicates, each with a unique random number seed. Our experiment is implemented using the Empirical library; our implementation is included in the supplemental material for this paper \citep{zenodo_supplement}. 
 
 \subsection{Avida}
 
@@ -349,17 +376,18 @@ Organisms in Avida replicate asexually by copying themselves instruction-by-inst
 When an organism successfully replicates, the resulting offspring is placed randomly in the world, replacing that location's former occupant.
 Thus, there is selection pressure for organisms to replicate quickly before being copied over by others.
 
-A digital organism's replication speed can be improved by reducing the amount of instruction executions required for an organism to copy itself (\textit{e.g.}, by optimizing the self-copy genetic machinery) or by increasing its metabolic rate. Metabolic rate determines the speed at which an organism executes instructions in their genome; a higher metabolic rate allows an organism to execute its genome faster, which, in turn, allows the organism to copy itself faster. 
+A digital organism's replication speed can be improved by reducing the amount of instruction executions required for an organism to copy itself (\textit{e.g.}, by optimizing the self-copy genetic machinery) or by increasing its metabolic rate. Metabolic rate determines the speed at which an organism executes instructions in its genome; a higher metabolic rate allows an organism to execute its genome faster, which, in turn, allows the organism to copy itself faster. 
 Initially, an organism's metabolic rate is approximately proportional
 to its genome length; however, organisms can influence their metabolic rate by performing particular functions, such as mathematical computations.
 In this way, we can differentially reward or punish the performance of different functions.
 % @AML: Do we want to talk in terms of resources here or only bring them up when talking about the limited-resource environment?
 
 % todo - clarify hyphen in Bugs in Writing book --- LOL, got a reviewer comment on this!
-We evolve thirty replicate populations of size 500 in four different environments: a minimal environment, the logic-9 environment, a limited-resource environment, and a simple changing environment. %With the exception of the limited-resource environment, 
+We evolve thirty replicate populations of size 500 for 200,000 generations in four different environments: a minimal environment, the logic-9 environment, a limited-resource environment, and a simple changing environment. %With the exception of the limited-resource environment, 
 % - [insert some overarching justification for different environments, contrast with benchmark problems - richer dynamics, more complex genotype-phenotype mapping, implicit selection, life history traits, etc].
-% - Insert relevant experiment parameters that are generic across treatments
-
+% - Insert relevant experiment parameters that are generic across treatment
+Across all environments, instruction-copy operations erred at a rate of 0.0075, resulting in substitution mutations. 
+Divide operations could result in single-instruction insertions and deletions at a per-divide rate of 0.05.
 
 % ENVIRONMENT: minimal - describe, intuitions w/respect to metrics
 In the \textbf{minimal environment}, we do not reward any functions. Because these digital organisms cannot influence their execution speed by performing functions, selection pressure is entirely focused on optimizing the efficiency at which organisms can self-replicate. 
@@ -373,7 +401,6 @@ Logic-9, like the minimal environment, is a single-niche environment, so we expe
 In addition to looking at individuals along a lineage, we compress lineages into sequences of phenotypic function profiles. Each of the nine rewarded Boolean logic functions are of varying complexity to compute, NAND and NOT being the simplest and EQUALS being the most complex. Further, in the logic-9 environment, simpler functions are building blocks for the more complex functions. 
 As such, we expect to see functions appear on lineages in roughly the order of function complexity.
 We can also use lineages compressed into sequences of function profiles to measure the rate of function acquisition (phenotypic volatility) or to look for trends in how long lineages spend in a particular phenotypic state, which can help untangle which phenotypic transitions might be the most challenging.
-
 
 % ENVIRONMENT: limited-resource - describe, intuitions w/respect to metrics
 % @AML: Should we talk about inflow/outflow rates?
@@ -390,18 +417,20 @@ Because previous work has shown that the limited-resource environment supports t
 %In the \textbf{changing environment}, populations were subjected to a cyclical, two-phase environment. 
 In the \textbf{changing environment}, the rewarded functions cycled between 
 %equal-length periods (200 updates* [explain updates, maybe in footnote]) of 
-two opposing states: ENV-NAND (where we reward NAND and punish NOT) and ENV-NOT (where we reward NOT and punish NAND). 
+two opposing states 
+(at a rate of 200 updates\footnote{One update  in Avida is  defined  as  the  amount  of  time  it  takes  for  the  average organism  to  execute  30  instructions.  See~\citep{ofria_avida:_2004}  for more details.}): ENV-NAND (where we reward NAND and punish NOT) and ENV-NOT (where we reward NOT and punish NAND). 
 ENV-NAND and ENV-NOT were configured such that no phenotype can be optimal across both environment states. To achieve maximal fitness in either ENV-NAND or ENV-NOT, organisms must perform \textit{only} the focal function.
 In such environments, successful lineages should move to occupy a region of genotype space such that it is easier to mutationally toggle between a phenotype of only performing NAND and a phenotype of only performing NOT \citep{caninokonig_fluctuating_2018}.
 In this treatment, we expect to see a high number of phenotype changes but a low total number of unique phenotypes along evolved lineages.
 Further, we expect the rate of phenotypic change along successful lineages to approach the rate of environmental change, as these lineages would have been more likely to produce offspring well adapted to the next environment.
 
 % @AML: Need a sentence pointing out that specific configurations for all of these runs can be found in BLAH.
+The specific configurations used in these experiments can be found in the supplemental material for this paper~\citep{zenodo_supplement}.
 
 
 \subsection{Data Analysis}
 
-We analyzed trends in our metrics using the R Statistical Computing Language~\citep{r_core_team_r:_2017}. Specifically, we used the ggplot2 package for all graphs included in this paper~\citep{wickham_ggplot2:_2016}. All analysis scripts are available in the supplemental material for this paper \citep{supplement}.
+We analyzed trends in our metrics using the R Statistical Computing Language~\citep{r_core_team_r:_2017}. Specifically, we used the ggplot2 package for all graphs included in this paper~\citep{wickham_ggplot2:_2016}. All analysis scripts are available in the supplemental material for this paper \citep{zenodo_supplement}.
 
 
 \section{Results and Discussion}
@@ -427,7 +456,7 @@ population-level means behaved similarly. All experiments shown here used a tour
 \end{figure}
 
 
-Overall, our results were consistent with evolutionary theory. As mutation rate increases, coalescence takes longer, as evidenced by the fact that the MRCA is farther back in time at higher mutation rates (see Figure \ref{fig:mutation_rate}). Consequently, phylogenetic richness (as measured by phylogenetic diversity) is higher at high mutation rates. Phylogenetic divergence, measured here as mean pairwise distance between taxa, is similarly higher at high mutation rates. Evolutionary distinctiveness, being another measurement of phylogenetic divergence, behaved almost identically \citep{supplement}. Variance of evolutionary distinctiveness and pairwise distance between taxa (phylogenetic regularity metrics) behaved similarly to the phylogenetic divergence metrics. This pattern makes sense, as most phylogenetic divergence on these landscapes will produce unbalanced phylogenetic trees. If there were stable coexistence between multiple clades, we would expect to see a reduced correlation between the phylogenetic divergence metrics and the phylogenetic regularity metrics. Increased mutation rate also increases the number of deleterious steps taken, a logical consequence of increasing mutation relative to strength of selection. The relationship between phenotypic volatility and mutation rate appears to fluctuate. This phenomenon is worthy of further study, but appears to be related to the probability of mutations moving a lineage between peaks of equal height. Completely unsurprisingly, mutation accumulation increases linearly with mutation rate.
+Overall, our results were consistent with evolutionary theory. As mutation rate increases, coalescence takes longer, as evidenced by the fact that the MRCA is farther back in time at higher mutation rates (see Figure \ref{fig:mutation_rate}). Consequently, phylogenetic richness (as measured by phylogenetic diversity) is higher at high mutation rates. Phylogenetic divergence, measured here as mean pairwise distance between taxa, is similarly higher at high mutation rates. Evolutionary distinctiveness, being another measurement of phylogenetic divergence, behaved almost identically \citep{zenodo_supplement}. Variance of evolutionary distinctiveness and pairwise distance between taxa (phylogenetic regularity metrics) behaved similarly to the phylogenetic divergence metrics. This pattern makes sense, as most phylogenetic divergence on these landscapes will produce unbalanced phylogenetic trees. If there were stable coexistence between multiple clades, we would expect to see a reduced correlation between the phylogenetic divergence metrics and the phylogenetic regularity metrics. Increased mutation rate also increases the number of deleterious steps taken, a logical consequence of increasing mutation relative to strength of selection. The relationship between phenotypic volatility and mutation rate appears to fluctuate. This phenomenon is worthy of further study, but appears to be related to the probability of mutations moving a lineage between peaks of equal height. Completely unsurprisingly, mutation accumulation increases linearly with mutation rate.
 
 \begin{figure}
 \centering
@@ -448,7 +477,7 @@ Similarly, increasing tournament size generally increases the rate of coalescenc
 \end{figure}
 
 
-Surprisingly, there is no clear effect of tournament size on the count of deleterious steps along the dominant lineage (as evidenced by the fact that the confidence intervals all overlap). Values for all selection schemes and tournament sizes hover near 2500, meaning that a deleterious step is taken in roughly half of the 5000 generations. This result is partially an effect of mutation rate; at the lowest mutation rate, there is a clear trend toward fewer deleterious steps as tournament sizes increase \citep{supplement}. However, the effect of mutation rate on the relationship between tournament size and dominant deleterious steps is complex, particularly for Composition Function 2 \citep{supplement}. These trends likely share a common cause with the thresholding effect evident in Figure \ref{fig:mutation_rate}, where the number of deleterious steps along the dominant lineage abruptly climbs between mutation rates of %0.0000001 and 0.00001 
+Surprisingly, there is no clear effect of tournament size on the count of deleterious steps along the dominant lineage (as evidenced by the fact that the confidence intervals all overlap). Values for all selection schemes and tournament sizes hover near 2500, meaning that a deleterious step is taken in roughly half of the 5000 generations. This result is partially an effect of mutation rate; at the lowest mutation rate, there is a clear trend toward fewer deleterious steps as tournament sizes increase \citep{zenodo_supplement}. However, the effect of mutation rate on the relationship between tournament size and dominant deleterious steps is complex, particularly for Composition Function 2 \citep{zenodo_supplement}. These trends likely share a common cause with the thresholding effect evident in Figure \ref{fig:mutation_rate}, where the number of deleterious steps along the dominant lineage abruptly climbs between mutation rates of %0.0000001 and 0.00001 
 $10^{-7}$ and $10^{-5}$
 and remains relatively flat over other mutation rates. Based on an inspection of the 3D fitness landscape visualizations, we can see that this is not an effect of lineages moving from peak-to-peak; at most mutation rates, they tend to remain on a single peak (with the exception of adjacent peaks in the Shubert function; see Figure \ref{fig:lineageviz}). Thus, we can infer that this effect is the result of a drift-like phenomenon where, at sufficiently high mutation rates, all members of the population are constantly somewhat displaced from their local fitness peak.
 
@@ -514,8 +543,8 @@ We thank members of the MSU Digital Evolution Lab for helpful comments and sugge
 \setlength{\bibsep}{2pt}
 
 \footnotesize
-\bibliographystyle{apalike}
-\bibliography{paper/Zotero,paper/bibliography} % replace by the name of your .bib file
+\bibliographystyle{abbrv}
+\bibliography{paper/Zotero,paper/bibliography}
 
 \end{document}
 
