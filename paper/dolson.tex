@@ -1,11 +1,14 @@
 \documentclass[letterpaper]{article}
 
-\usepackage{natbib,paper/alifeconf}  %% The order is important
+\usepackage[square,numbers]{natbib}
+\usepackage{paper/alifeconf}  %% The order is important
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{setspace}
+\usepackage{graphicx}
 \newcommand{\reduceCaptionPadding}{\setlength{\belowcaptionskip}{-10pt}}
 
+\usepackage[printfigures]{figcaps}
 \renewcommand\floatpagefraction{.9}
 \renewcommand\dblfloatpagefraction{.9} % for two column documents
 \renewcommand\topfraction{.9}
@@ -148,10 +151,9 @@ Code for all of our metrics is open source and available in the Empirical librar
 \subsection{Lineage Metrics}
 
 \begin{figure*}[t]
-\includegraphics[width=\textwidth]{figs/lineage_metrics_cartoon.png}
+\includegraphics[width=\textwidth]{{figs/dolson.lineage_metrics_cartoon}.png}
 \reduceCaptionPadding
-\caption{\small Four methods of representing a lineage.  This example lineage has accumulated three mutations (one reverse mutation and two substitutions) and gone through three distinct phenotypes. In (A), each state along the lineage represents a single individual; lineage length is the number of generations spanned by the lineage (eight). In (B), states represent the sequence of genotypes along the lineage, reducing lineage length to four. In (C) states represent the sequence of phenotypes along the lineage; lineage length is the number of times a different phenotype is expressed (three). In (D), states are a particular phenotypic characteristic; here, lineage length is two.}
-\label{fig:lineage_metrics_cartoon}
+\caption{\small Four methods of representing a lineage.  This example lineage has accumulated three mutations (one reverse mutation and two substitutions) and gone through three distinct phenotypes. In (A), each state along the lineage represents a single individual; lineage length is the number of generations spanned by the lineage (eight). In (B), states represent the sequence of genotypes along the lineage, reducing lineage length to four. In (C) states represent the sequence of phenotypes along the lineage; lineage length is the number of times a different phenotype is expressed (three). In (D), states are a particular phenotypic characteristic; here, lineage length is two.\label{fig:lineage_metrics_cartoon}}
 \end{figure*}
 
 Each of the three lineage metrics that we discuss --- lineage length, mutation accumulation, and phenotypic volatility --- reduces a lineage to a linear sequence of states where each state represents an individual or sequence of individuals that share a common genotypic or phenotypic characteristic of interest; Figure \ref{fig:lineage_metrics_cartoon} is given as a toy example to help guide our discussion of these metrics. 
@@ -232,14 +234,13 @@ For more metrics and more detail on all of these metrics, see~\citep{winter_phyl
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs/toy-phylogeny.pdf}
+    \includegraphics[width=\linewidth]{{figs/dolson.toy-phylogeny}.pdf}
     \caption{\small Both (A) and (B) show pruned phylogenetic trees on which we demonstrate several phylogentic metrics. 
     Nodes in each tree represent taxa, and edges between nodes represent ancestor-descendant relationships.
     %For a more complete explanation of interpreting phylogenetic trees, see Section \ref{sec:phylogenetictrees}. (@AML: Section references not working because of the formatting)
     In each tree, extant taxa (leaf nodes) are shaded red, the original ancestor (the root node) is shaded yellow, and the MRCA is outlined in blue. We are assuming that all branches have a length of 1 (in some contexts, branch lengths may be varied to more precisely reflect evolutionary distance between taxa). In (A), phylogenetic richness (calculated as phylogenetic diversity; ~\citealp{faith_conservation_1992}) equals 4, phylogenetic divergence (calculated as mean pairwise distance among extant taxa) equals 2, and phylogenetic regularity (calculated as the variance of pairwise distances among extant taxa) equals 0. In (B), phylogenetic richness equals 6, phylogenetic divergence equals 3.33, and phylogenetic regularity equals %0.89 % (population variance)
-    1.33.
+    1.33. \label{fig:toy-phylo}
     }
-    \label{fig:toy-phylo}
 \end{figure}
 
 \subsubsection{Depth of Most-Recent Common Ancestor}
@@ -268,9 +269,8 @@ The idea that any lineage can be abstracted into a sequence of states (see Figur
 
 \begin{figure}
     \centering
-    \includegraphics[width=2in]{figs/StateSequenceSchematic.png}
-    \caption{\small Schematic representation of state sequence visualization. Colors indicate different states. The optional legend along the side can be used to indicate any information relevant to understanding the drivers of the state changes.}
-    \label{fig:stateseqschematic}
+    \includegraphics[width=2in]{{figs/dolson.StateSequenceSchematic}.png}
+    \caption{\small Schematic representation of state sequence visualization. Colors indicate different states. The optional legend along the side can be used to indicate any information relevant to understanding the drivers of the state changes. \label{fig:stateseqschematic}}
 \end{figure}
 
 \subsection{State Sequence Visualizations}
@@ -283,9 +283,8 @@ A direct consequence of the fact that lineages are just sequences of states is t
 
 \begin{figure}
     \centering
-    \includegraphics{figs/colored.png}
-    \caption{\small A lineage drawn on top of a fitness landscape}
-    \label{fig:linoverlay}
+    \includegraphics{figs/{dolson.colored}.png}
+    \caption{\small A lineage drawn on top of a fitness landscape. \label{fig:linoverlay}}
 \end{figure}
 
 In order to understand how a particular evolutionary algorithm performs on a given problem, we can observe how that algorithm moves a population across the problem's fitness landscape~\citep{kauffman_towards_1987}. A fitness landscape can be thought of as a map from solution representations into the quality of that solution (its fitness)~\citep{wright_roles_1932}.  Traditionally, fitness landscapes have most commonly been visualized as three-dimensional surface plots illustrating the effects of two continuously-varying traits on fitness (\textit{e.g.}, \citealp{li_benchmark_2013}, or Figure~\ref{fig:landscapes} of this paper). One of these traits is the x-axis, one is the y-axis, and the fitness conferred by that combination of values is the z-axis. Although we will focus here on fitness landscapes that can be fully depicted in three dimensions, it is important to recognize that most real-world fitness landscapes have far more dimensions. Various dimensionality-reduction techniques can be applied to reduce them to three dimensions, but doing so may be misleading~\citep{pigliucci_high-dimensional_2010}.
@@ -313,9 +312,8 @@ Another way to convey additional information is in the placement of nodes. In bi
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs/Phylogenyschematic.png}
-    \caption{\small The same phylogeny depicted in two different ways. A) Depicts a standard phylogeny, where nodes represent taxa and edges indicate parent-child relationships. In this phylogeny, node position along the time axis represents time of birth. Nodes are colored to distinguish taxa that are extant in the present (blue) from extinct taxa (black). Note that, because this is a pruned phylogeny, all leaf nodes are currently extant. Edges can be colored to convey whatever information is most useful. B) Depicts the same phylogenetic tree but with boxes indicating taxon lifespans in place of circular nodes.}
-    \label{fig:phyloschme}
+    \includegraphics[width=\linewidth]{figs/{dolson.Phylogenyschematic}.png}
+    \caption{\small The same phylogeny depicted in two different ways. A) Depicts a standard phylogeny, where nodes represent taxa and edges indicate parent-child relationships. In this phylogeny, node position along the time axis represents time of birth. Nodes are colored to distinguish taxa that are extant in the present (blue) from extinct taxa (black). Note that, because this is a pruned phylogeny, all leaf nodes are currently extant. Edges can be colored to convey whatever information is most useful. B) Depicts the same phylogenetic tree but with boxes indicating taxon lifespans in place of circular nodes. \label{fig:phyloschme}}
 \end{figure}
 
 % possibly mention other symbols to use for nodes
@@ -326,9 +324,8 @@ Muller plots show the abundance and ancestry of taxa in a population over time \
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs/MullerExample-cropped.png}
-    \caption{\small A Muller plot depicting the same phylogeny as the visualizations in Figure \ref{fig:phyloschme}. The red region represents the root node. As it gradually goes extinct, the proportion of the figure it takes up gradually diminishes. Its three offspring are shown in purple, green, and blue.}
-    \label{fig:mullerscheme}
+    \includegraphics[width=\linewidth]{{figs/dolson.MullerExample-cropped}.png}
+    \caption{\small A Muller plot depicting the same phylogeny as the visualizations in Figure \ref{fig:phyloschme}. The red region represents the root node. As it gradually goes extinct, the proportion of the figure it takes up gradually diminishes. Its three offspring are shown in purple, green, and blue.\label{fig:mullerscheme}}
 \end{figure}
 
 When should you use a Muller plot versus a phylogenetic tree? 
@@ -343,10 +340,9 @@ We applied the metrics defined above to four benchmark functions from the GECCO 
 
 \begin{figure}
 \centering
-\includegraphics[width=4in]{figs/landscapes.png}
+\includegraphics[width=4in]{{figs/dolson.landscapes}.png}
 \reduceCaptionPadding
-\caption{\small The fitness landscapes used in this experiment: A) Himmelblau, B) Six-humped Camel Back, C) Shubert, and D) Composition Function 2. Interactive versions available at \url{https://emilydolson.github.io/fitness_landscape_visualizations}.}
-\label{fig:landscapes}
+\caption{\small The fitness landscapes used in this experiment: A) Himmelblau, B) Six-humped Camel Back, C) Shubert, and D) Composition Function 2. Interactive versions available at \url{https://emilydolson.github.io/fitness_landscape_visualizations}.\label{fig:landscapes}}
 \end{figure}
 
 To gain a broad understanding of our metrics, we applied them to a diverse subset of benchmark problems from the GECCO Competition on Niching Methods: Himmelblau, Shubert, Composition Function 2, and Six-Humped Camel Back~\citep{li_benchmark_2013}. For each test problem, the X and Y coordinates offered by a given organism are translated by the function into a fitness value. Because of their low dimensionality, we can fully visualize each problem's actual fitness landscape, allowing us to directly view how our ancestry-based metrics respond to the actual paths evolved lineages take through the fitness landscape under different conditions. We used the implementations of these problems at \url{https://github.com/mikeagn/CEC2013} (C++ for fitness calculations during evolution, Python for post-hoc analysis). Figure \ref{fig:landscapes} shows the fitness landscapes defined by each of our four chosen test problems.
@@ -439,20 +435,18 @@ We analyzed trends in our metrics using the R Statistical Computing Language~\ci
 
 \begin{figure}
 \centering
-\includegraphics[width=4in]{figs/shubert_landscape.png}
+\includegraphics[width=4in]{{figs/dolson.shubert_landscape}.png}
 \reduceCaptionPadding
-\caption{\small A close-up on two adjacent peaks in the Shubert function fitness landscape. Lineages are depicted as paths fading from white to black over evolutionary time. The lineages shown here evolved under a mutation rate of 0.01. A) Was evolved using a tournament size of 2, whereas B) was evolved using a tournament size of 16. These figures neatly illustrate how increased tournament size keeps the lineage near the tops of the peaks.}
-\label{fig:lineageviz}
+\caption{\small A close-up on two adjacent peaks in the Shubert function fitness landscape. Lineages are depicted as paths fading from white to black over evolutionary time. The lineages shown here evolved under a mutation rate of 0.01. A) Was evolved using a tournament size of 2, whereas B) was evolved using a tournament size of 16. These figures neatly illustrate how increased tournament size keeps the lineage near the tops of the peaks.\label{fig:lineageviz}}
 \end{figure}
 
 
 \begin{figure}
 \centering
-\includegraphics[width=4in]{figs/all_mutation_rate_crop.png}
+\includegraphics[width=4in]{figs/{dolson.all_mutation_rate_crop}.png}
 \reduceCaptionPadding
 \caption{\small Values of example metrics across different mutation rates for each of the four problems. For these problems, all lineage-based metrics are calculated on the lineage of the fittest organism at the final time point; %(the dominant);
-population-level means behaved similarly. All experiments shown here used a tournament size of 4. Circles are medians, vertical lines show inter-quartile range, and shaded area is a bootstrapped 95\% confidence interval around the mean. Note that both axes are on log scales.}
-\label{fig:mutation_rate}
+population-level means behaved similarly. All experiments shown here used a tournament size of 4. Circles are medians, vertical lines show inter-quartile range, and shaded area is a bootstrapped 95\% confidence interval around the mean. Note that both axes are on log scales.\label{fig:mutation_rate}}
 \end{figure}
 
 
@@ -460,20 +454,18 @@ Overall, our results were consistent with evolutionary theory. As mutation rate 
 
 \begin{figure}
 \centering
-\includegraphics[width=4in]{figs/all_ts_crop.png}
+\includegraphics[width=4in]{{figs/dolson.all_ts_crop}.png}
 \reduceCaptionPadding
-\caption{\small Values of example metrics across different tournament sizes for each of the four problems. All experiments shown here used a mutation rate of 0.001. For these problems, all lineage-based metrics are calculated on the lineage of the fittest organism at the final time point; population-level means behaved similarly. Circles are medians, vertical lines show inter-quartile range, and shaded area is a bootstrapped 95\% confidence interval around the mean. Note that both axes are on log scales.}
-\label{fig:ts}
+\caption{\small Values of example metrics across different tournament sizes for each of the four problems. All experiments shown here used a mutation rate of 0.001. For these problems, all lineage-based metrics are calculated on the lineage of the fittest organism at the final time point; population-level means behaved similarly. Circles are medians, vertical lines show inter-quartile range, and shaded area is a bootstrapped 95\% confidence interval around the mean. Note that both axes are on log scales.\label{fig:ts}}
 \end{figure}
 
 Similarly, increasing tournament size generally increases the rate of coalescence, as higher tournament sizes correspond to stronger selection (see Figure \ref{fig:ts}). As a result, all of the measurements of phylogenetic richness and divergence decrease as tournament size increases. MRCA depth, on the other hand, increases, directly reflecting the increased frequency of selective sweeps. 
 
 \begin{figure}
 \centering
-\includegraphics[width=4in]{figs/eco_mutation_rate_crop.png}
+\includegraphics[width=4in]{{figs/dolson.eco_mutation_rate_crop}.png}
 \reduceCaptionPadding
-\caption{\small Values of example metrics across different mutation rates for each of the four problems under a diversity-preserving selection regime, Eco-EA. For these problems, all lineage-based metrics are calculated on the lineage of the fittest organism at the final time point; population-level means behaved similarly. All experiments shown here used a tournament size of 4. Circles are medians, vertical lines show inter-quartile range, and shaded area is a bootstrapped 95\% confidence interval around the mean. Note that both axes are on log scales.}
-\label{fig:ecology}
+\caption{\small Values of example metrics across different mutation rates for each of the four problems under a diversity-preserving selection regime, Eco-EA. For these problems, all lineage-based metrics are calculated on the lineage of the fittest organism at the final time point; population-level means behaved similarly. All experiments shown here used a tournament size of 4. Circles are medians, vertical lines show inter-quartile range, and shaded area is a bootstrapped 95\% confidence interval around the mean. Note that both axes are on log scales.\label{fig:ecology}}
 \end{figure}
 
 
@@ -492,25 +484,22 @@ The data from Avida are also consistent with our expectations and additionally p
 
 \begin{figure}
     \centering
-    \includegraphics[width=4in]{figs/metrics_avida.png}
-    \caption{\small A sampling of informative lineage metrics from Avida calculated after approximately 10,000 generations. Mean pairwise distance is a measurement of phylogenetic divergence; higher values imply greater phylogenetic diversity. MRCA generation is the generation at which the current most recent common ancestor occurred (lower numbers mean it was longer ago). For Avida, all lineage-based metrics are calculated on the lineage of the most numerous phenotype. Unique phenotypes is the count of unique phenotypes that occurred along the dominant lineage.}
-    \label{fig:avida_metrics}
+    \includegraphics[width=4in]{{figs/dolson.metrics_avida}.png}
+    \caption{\small A sampling of informative lineage metrics from Avida calculated after approximately 10,000 generations. Mean pairwise distance is a measurement of phylogenetic divergence; higher values imply greater phylogenetic diversity. MRCA generation is the generation at which the current most recent common ancestor occurred (lower numbers mean it was longer ago). For Avida, all lineage-based metrics are calculated on the lineage of the most numerous phenotype. Unique phenotypes is the count of unique phenotypes that occurred along the dominant lineage.    \label{fig:avida_metrics}}
 \end{figure}
 
 Looking at phenotypic volatility, we see that the changing environment condition has dramatically higher volatility than the others. This result is precisely what we hypothesized, as the phenotype should change approximately every time the environment does (see Figure \ref{fig:avida_metrics}). Indeed, from Figure \ref{fig:stateseq}, we can see that this predicted mechanism is accurate. The limited-resource environment has lower phenotypic volatility than the changing environment, but higher phenotypic volatility than the other two environments. This observation is consistent with the fact that limited-resource is also a changing environment; competitive pressures shift with the composition of the population. This interpretation is corroborated by Muller plots from the limited-resource condition, which show frequent shifts in the abundance of various phenotypes (see Figure \ref{fig:mullerlimres}). We can gain further insight by comparing phenotypic volatility to the count of unique phenotypes along a lineage. Despite its high phenotypic volatility, the changing environment condition produces lineages with relatively few unique phenotypes. This finding makes sense, as the changing environment is only creating pressure to toggle back and forth between two phenotypes. Limited-resource, however, has a high count of unique states relative to its phenotypic volatility. From this comparison, we can conclude that the competition in this environment is creating pressure for the population to explore new phenotypic states, rather than simply cycling among a fixed set.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs/Mullerhighres-cropped.png}
-    \caption{\small Muller plot from a representative run of Avida in the limited-resource environment. This plot shows the population dynamics of different phenotypes over 8,000,000 updates (a unit of time in Avida that is proportional to the number of CPU cycles used thus far). Only phenotypes that make up at least 5\% of the population at at least one time point are shown. Note the region in the middle of the plot where we can see repeated selective sweeps that are contained to a single niche.}
-    \label{fig:mullerlimres}
+    \includegraphics[width=\linewidth]{{figs/dolson.Mullerhighres-cropped}.png}
+    \caption{\small Muller plot from a representative run of Avida in the limited-resource environment. This plot shows the population dynamics of different phenotypes over 8,000,000 updates (a unit of time in Avida that is proportional to the number of CPU cycles used thus far). Only phenotypes that make up at least 5\% of the population at at least one time point are shown. Note the region in the middle of the plot where we can see repeated selective sweeps that are contained to a single niche.    \label{fig:mullerlimres}}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=4in]{figs/mutations_avida.png}
-    \caption{\small Mutations along the dominant lineage across treatments in Avida, calculated after approximately 10,000 generations. The upper left shows the total count of mutations of all types. The other plots show the quantity of each mutation type as a proportion of the total.}
-    \label{fig:avida_mutation}
+    \includegraphics[width=4in]{{figs/dolson.mutations_avida}.png}
+    \caption{\small Mutations along the dominant lineage across treatments in Avida, calculated after approximately 10,000 generations. The upper left shows the total count of mutations of all types. The other plots show the quantity of each mutation type as a proportion of the total.\label{fig:avida_mutation}}
 \end{figure}
 
 
@@ -519,10 +508,9 @@ From the mutation accumulation data, we can begin to glean information about the
 
 \begin{figure}
 \centering
-\includegraphics[width=\columnwidth]{figs/chg_env_lineage_seq_with_legend.png}
+\includegraphics[width=\columnwidth]{{figs/dolson.chg_env_lineage_seq_with_legend}.png}
 \reduceCaptionPadding
-\caption{\small State sequence visualization of phenotypes along the dominant lineage in the changing environment condition. The key along the left indicates the environment's state over time. Each column is one replicate. From this visualization, we can see that most successful lineages are able to adapt to a change in the environment relatively quickly. We can also see that there is a fair amount of variation in the precise timings of these changes and whether they occur for every change of the environment.}
-\label{fig:stateseq}
+\caption{\small State sequence visualization of phenotypes along the dominant lineage in the changing environment condition. The key along the left indicates the environment's state over time. Each column is one replicate. From this visualization, we can see that most successful lineages are able to adapt to a change in the environment relatively quickly. We can also see that there is a fair amount of variation in the precise timings of these changes and whether they occur for every change of the environment.\label{fig:stateseq}}
 \end{figure}
 
 \section{Conclusions}
