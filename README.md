@@ -6,7 +6,7 @@ Ancestry-based Analyses Provide Insights and Intuition about Evolutionary Dynami
 
 Note, this paper is an extension of the paper "Quantifying the tape of life: Ancestry-based metrics provide insights and intuition about evolutionary dynamics" published in the proceedings of [ALIFE 2018](http://2018.alife.org/).
 
-![Cartoon Illustration of lineage metrics](figs/lineage_metrics_cartoon.png)
+![Cartoon Illustration of lineage metrics](https://raw.githubusercontent.com/emilydolson/interpreting_the_tape_of_life/master/figs/dolson.lineage_metrics_cartoon.png)
 
 **Navigation:**
 
