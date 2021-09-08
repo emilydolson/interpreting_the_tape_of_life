@@ -4,7 +4,7 @@ This repository contains the code, configuration files, analyses, and extra docu
 for the paper ["Interpreting the Tape of Life: 
 Ancestry-based Analyses Provide Insights and Intuition about Evolutionary Dynamics"](https://direct.mit.edu/artl/article/26/1/58/93272/Interpreting-the-Tape-of-Life-Ancestry-Based).
 
-Note, this paper is an extension of the paper "Quantifying the tape of life: Ancestry-based metrics provide insights and intuition about evolutionary dynamics" published in the proceedings of [ALIFE 2018](http://2018.alife.org/).
+Note, this paper is an extension of the paper "Quantifying the tape of life: Ancestry-based metrics provide insights and intuition about evolutionary dynamics" published in the proceedings of [ALIFE 2018](http://2018.alife.org/). It also incorporates work from ["Visualizing the tape of life: exploring evolutionary history with virtual reality"](https://dl-acm-org.proxy1.cl.msu.edu/doi/abs/10.1145/3205651.3208301), which was presented at the 2018 GECCO Visualization Workshop, VizGec.
 
 ![Cartoon Illustration of lineage metrics](https://raw.githubusercontent.com/emilydolson/interpreting_the_tape_of_life/master/figs/dolson.lineage_metrics_cartoon.png)
 
