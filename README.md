@@ -113,7 +113,7 @@ refer to the paper.
 To gain a broad understanding of our metrics, we applied them to four two-dimensional, real-valued
 benchmark optimization problems from the GECCO Competition on Niching Methods: 
 
-![niching competition fitness landscapes](./figs/landscapes.png)
+![niching competition fitness landscapes](./figs/dolson.landscapes.png)
 
 - (A) Himmelblau
 - (B) Six-Humped Camel Back 
@@ -151,7 +151,7 @@ For more details about each environment, refer to our paper.
 
 ## Metric/Visualization Implementations
 
-![Phylogeny schematic](figs/Phylogenyschematic.png)
+![Phylogeny schematic](figs/dolson.Phylogenyschematic.png)
 
 
 - **Lineage/phylogeny metrics:** Our implementations for (most of) the non-trivial lineage and phylogeny metrics are in the 
